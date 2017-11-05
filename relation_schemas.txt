@@ -1,11 +1,35 @@
 Relation Schema for the StarsRus Database
 
-CREATE TABLE Customers (username CHAR(20), password CHAR(30), name CHAR(20), state CHAR(2),
-       	     		phone CHAR(10), email CHAR(30), tax_id INTEGER,
-			PRIMARY KEY username)
+CREATE TABLE Users (c_username CHAR(20), password CHAR(30), name CHAR(20), state CHAR(2),
+                phone CHAR(10), email CHAR(30), tax_id INTEGER, address CHAR(20),
+                PRIMARY KEY username)
 
 CREATE TABLE MarketAccount (m_id INTEGER, c_username CHAR(20) NOT NULL, balance REAL,
-       	     		   PRIMARY KEY m_id, FORIEGN KEY c_username REFERENCES Customers,
-			   ON DELETE UPDATE)
+                   PRIMARY KEY m_id, FOREIGN KEY c_username REFERENCES Users ON DELETE UPDATE)
 
-CREATE TABLE StockAccount (s_id INTEGER, c_username CHAR(20) NOT NULL, balance REAL,
+CREATE TABLE StockAccount (s_id INTEGER, c_username CHAR(20) NOT NULL, shares INTEGER, 
+                  stock_price REAL, stock_symbol,
+                  PRIMARY KEY s_id, FOREIGN KEY c_username REFERENCES Users ON DELETE UPDATE)
+
+CREATE TABLE Balance(m_id INTEGER NOT NULL, balance REAL NOT NULL, balance_date CHAR(10) NOT NULL,
+                  FOREIGN KEY m_id REFERENCES MarketAccount,
+                  PRIMARY KEY (m_id, balance_date))
+
+CREATE TABLE Transactions(t_id INTEGER, m_id INTEGER, s_id INTEGER, t_date CHAR(10), deposit_amount REAL,
+                  withdraw_amount REAL, buy_amount INTEGER, sell_amount INTEGER, stock_symbol CHAR(3), interest_accrued REAL,
+                  stock_price REAL, 
+                  PRIMARY KEY t_id, FOREIGN KEY m_id REFERENCES MarketAccount,
+                  FOREIGN KEY s_id REFERENCES StockAccount, FOREIGN KEY stock_symbol )
+
+CREATE TABLE Stocks(stock_symbol CHAR(3), a_id INTEGER NOT NULL, current_price REAL,
+                  PRIMARY KEY stock_symbol, FOREIGN KEY a_id REFERENCES Actors)
+
+CREATE TABLE StockEndPrice(stock_symbol CHAR(3) NOT NULL, closing_date CHAR(10) NOT NULL, closing_price REAL NOT NULL,
+                  PRIMARY KEY (closing_date, stock_symbol), FOREIGN KEY stock_symbol REFERENCES Stocks)
+
+CREATE TABLE Actors(a_id INTEGER, name CHAR(20), stock_symbol CHAR(3), birthday CHAR(10),
+                  PRIMARY KEY id, FOREIGN KEY stock_symbol REFERENCES Stocks)
+
+CREATE TABLE MovieContracts(mc_id INTEGER, year INTEGER, role CHAR(20), title CHAR(20), total_value REAL, a_id INTEGER,
+                  PRIMARY KEY mc_id, FOREIGN KEY a_id REFERENCES Actors)
+
