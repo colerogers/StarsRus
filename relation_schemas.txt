@@ -1,0 +1,11 @@
+Relation Schema for the StarsRus Database
+
+CREATE TABLE Customers (username CHAR(20), password CHAR(30), name CHAR(20), state CHAR(2),
+       	     		phone CHAR(10), email CHAR(30), tax_id INTEGER,
+			PRIMARY KEY username)
+
+CREATE TABLE MarketAccount (m_id INTEGER, c_username CHAR(20) NOT NULL, balance REAL,
+       	     		   PRIMARY KEY m_id, FORIEGN KEY c_username REFERENCES Customers,
+			   ON DELETE UPDATE)
+
+CREATE TABLE StockAccount (s_id INTEGER, c_username CHAR(20) NOT NULL, balance REAL,
