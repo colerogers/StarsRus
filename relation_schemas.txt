@@ -1,14 +1,14 @@
 Relation Schema for the StarsRus Database
 
 CREATE TABLE Users (c_username CHAR(20), password CHAR(30), name CHAR(20), state CHAR(2),
-                phone CHAR(10), email CHAR(30), tax_id INTEGER, address CHAR(20),
+                phone CHAR(10), email CHAR(30), tax_id INTEGER, address CHAR(20), manager BOOLEAN,
                 PRIMARY KEY username)
 
 CREATE TABLE MarketAccount (m_id INTEGER, c_username CHAR(20) NOT NULL, balance REAL,
                    PRIMARY KEY m_id, FOREIGN KEY c_username REFERENCES Users ON DELETE UPDATE)
 
 CREATE TABLE StockAccount (s_id INTEGER, c_username CHAR(20) NOT NULL, shares INTEGER, 
-                  stock_price REAL, stock_symbol,
+                  stock_price REAL, stock_symbol CHAR(3),
                   PRIMARY KEY s_id, FOREIGN KEY c_username REFERENCES Users ON DELETE UPDATE)
 
 CREATE TABLE Balance(m_id INTEGER NOT NULL, balance REAL NOT NULL, balance_date CHAR(10) NOT NULL,
@@ -21,8 +21,9 @@ CREATE TABLE Transactions(t_id INTEGER, m_id INTEGER, s_id INTEGER, t_date CHAR(
                   PRIMARY KEY t_id, FOREIGN KEY m_id REFERENCES MarketAccount,
                   FOREIGN KEY s_id REFERENCES StockAccount, FOREIGN KEY stock_symbol )
 
-CREATE TABLE Stocks(stock_symbol CHAR(3), a_id INTEGER NOT NULL, current_price REAL,
-                  PRIMARY KEY stock_symbol, FOREIGN KEY a_id REFERENCES Actors)
+CREATE TABLE Stocks(stock_symbol CHAR(3), a_id INTEGER NOT NULL,
+                  current_price REAL, PRIMARY KEY stock_symbol,
+                  FOREIGN KEY a_id REFERENCES Actors)
 
 CREATE TABLE StockEndPrice(stock_symbol CHAR(3) NOT NULL, closing_date CHAR(10) NOT NULL, closing_price REAL NOT NULL,
                   PRIMARY KEY (closing_date, stock_symbol), FOREIGN KEY stock_symbol REFERENCES Stocks)
