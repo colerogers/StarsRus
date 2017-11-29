@@ -2,12 +2,12 @@ import java.lang.*;
 import java.sql.*;
 
 public class DatabaseManager {
-    final String HOST = "jdbc:mysql://cs174a.engr.ucsb.edu:3306/<database>";
+    final String HOST = "jdbc:mysql://cs174a.engr.ucsb.edu:3306/ckoziolDB";
     final String USER;
     final String PWD;
-    Connection connection;
-    Statement statement;
-    ResultSet resultSet;
+    Connection connection = null;
+    Statement statement = null;
+    ResultSet resultSet = null;
 
     //public Connection getConnection() throws
 
@@ -53,7 +53,7 @@ public class DatabaseManager {
     public static void main(String []args){
 	DatabaseManager db;
 	if (args.length != 3){
-	    db = new DatabaseManager("colerogers", "249");
+	    db = new DatabaseManager("ckoziol", "959");
 	}else {
 	    db = new DatabaseManager(args[1], args[2]);
 	}
