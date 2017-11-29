@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if [ ! -f "DatabaseManager" ]; then
+   javac DatabaseManager.java
+fi
+
+java -cp /cs/class/cs174a/public/mysql-connector-java-5.1.44-bin.jar:. DatabaseManager
