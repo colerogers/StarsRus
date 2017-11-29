@@ -7,58 +7,70 @@ public class DatabaseManager {
     final String PWD;
     Connection connection = null;
     Statement statement = null;
-    ResultSet resultSet = null;
+    //ResultSet resultSet = null;
 
     //public Connection getConnection() throws
 
     DatabaseManager(){
-	USER = PWD = "";
+		USER = PWD = "";
     }
 
     DatabaseManager(String user, String password){
-	USER = user;
-	PWD = password;
-	// load the driver 
-	try{ Class.forName("com.mysql.jdbc.Driver");
-	}catch (Exception e){
-	    System.out.println("Error: unable to load class driver");
-	    System.exit(1);
-	}
+		USER = user;
+		PWD = password;
+		// load the driver 
+		try{ Class.forName("com.mysql.jdbc.Driver");
+		}catch (Exception e){
+		    System.out.println("Error: unable to load class driver");
+		    System.exit(1);
+		}
 
-	// connect to the database
-	try{
-	    connection = DriverManager.getConnection(HOST, USER, PWD);
-	}catch (Exception e){
-	    System.out.println("Error: unable to connect to db");
-	    System.exit(1);
-	}finally{
-	    //connection = DriverManager.
+		// connect to the database
+		try{
+		    connection = DriverManager.getConnection(HOST, USER, PWD);
+		}catch (Exception e){
+		    System.out.println("Error: unable to connect to db");
+		    System.exit(1);
+		} finally {
+			if (connection != null)
+				connection.close();
+		}
+		try{
+			statement = connection.createStatement();
+		}catch (Exception e){
+			System.out.println("CreateStatement() failed");
+			System.exit(1);
+		}finally {
+			if (statement != null) 
+				statement.close();
+		}
 	}
-
-	String QUERY = "";
-	try{
-	statement = connection.createStatement();
-	}catch (Exception e){
-	    System.out.println("CreateStatement() failed");
-	    System.exit(1);
+	
+	public ResultSet queryDB(String query){
+		try{
+		ResultSet resultSet = statement.executeQuery(QUERY);
+		}catch (Exception e){
+			System.out.println("executeQuery() failed");
+			System.exit(1);
+		}
+		return resultSet;
 	}
-	try{
-	resultSet = statement.executeQuery(QUERY);
-	}catch (Exception e){
-	    System.out.println("executeQuery() failed");
-	    System.exit(1);
-	}
-    }
 
     public static void main(String []args){
-	DatabaseManager db;
-	if (args.length != 3){
-	    db = new DatabaseManager("ckoziol", "959");
-	}else {
-	    db = new DatabaseManager(args[1], args[2]);
-	}
+		DatabaseManager db;
+		if (args.length != 3){
+	 	   	db = new DatabaseManager("ckoziol", "959");
+		}else {
+	    	db = new DatabaseManager(args[1], args[2]);
+		}
 
-	System.out.println("working");
+		ResultSet rs = db.queryDB("SELECT * FROM Actors;");
+		while (rs.next()){
+			System.out.println("rs has next;");
+		}
+		System.out.println("rs doesnt have next;");
+
 	
+		System.out.println("Done.");
     }
 }
