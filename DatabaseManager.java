@@ -73,7 +73,26 @@ public class DatabaseManager {
 	}
     }
 
-    public void openMarketAccount(String name, String state, String pNumber, String email, String taxId, String address, String username, int manager, String password){
+    public boolean userExists(String username){
+	String check = String.format("SELECT name FROM Users U WHERE U.c_username='%s';", username);
+	resultSet = queryDB(check);
+	if (!resultSet.next()){
+	    return false;
+	}
+	return true;
+    }
+
+    public void addMarketAccount(int m_id, String c_username, double balance){
+	String s = String.format("INSERT INTO MarketAccount (m_id, c_username, balance) WHERE (%d, %s, %f);", m_id, c_username, balance);
+	if (userExists(c_username)){
+
+	}else{
+	    System.out.println("username does not exist");
+	    System.exit(1);
+	}
+    }
+
+    public void addUser(String name, String state, String pNumber, String email, String taxId, String address, String username, int manager, String password){
 	if (state.length() != 2)
 	    System.out.println("State must be 2 letters");
 	if (pNumber.length() != 10)
@@ -89,9 +108,20 @@ public class DatabaseManager {
       market:0->stockAcct, 1->marketAcct
     */
     public void deposit(int m_id, String username, double amount) {
-	// check if they exist
-	
-	
+	// check if user exists
+	String check = String.format("SELECT name FROM Users U WHERE U.c_username='%s';", username);
+	resultSet = queryDB(check);
+	if (!resultSet.next()){
+	    // Need to create user
+	    System.out.println("username does not exist");
+	    System.exit(1);
+	}
+	check = String.format("SELECT MA.m_id FROM MarketAccount MA WHERE MA.m_id=%d", m_id);
+	resultSet = queryDB(check);
+	if (!resultSet.next()){
+	    // create market account for user and add $1000
+	    
+	}
 	//String s = String.format()
 	
 	
