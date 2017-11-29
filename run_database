@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
+if [ ! -f "DatabaseManager.java" ]; then
+    echo "Error: cannot find the java class"
+    exit 1
+fi
+
 if [ ! -f "DatabaseManager" ]; then
+    echo "Compiling java file"
    javac DatabaseManager.java
 fi
 
