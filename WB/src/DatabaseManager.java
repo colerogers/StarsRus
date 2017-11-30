@@ -174,7 +174,7 @@ public class DatabaseManager {
 
 	// return 0 if true, 1 if false
 	public int stockExists(String stock_symbol){
-		String s = String.format("SELECT S.stock_symbol FROM Stocks S WHERE s.stock_symbol='%s'", stock_symbol);
+		String s = String.format("SELECT S.stock_symbol FROM Stocks S WHERE S.stock_symbol='%s'", stock_symbol);
 		resultSet = queryDB(s);
 		try{
 			if (!resultSet.next()){
