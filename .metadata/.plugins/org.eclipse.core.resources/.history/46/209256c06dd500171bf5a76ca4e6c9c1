@@ -104,7 +104,9 @@ public class DatabaseManager {
 	return true;
     }
 
-
+<<<<<<< HEAD
+    public int addMarketAccount(String c_username){
+=======
     public boolean isManager(String username){
 	String check = String.format("SELECT U.manager FROM Users U WHERE U.c_username='%s';", username);
 	resultSet = queryDB(check);
@@ -121,6 +123,7 @@ public class DatabaseManager {
     }
 
     public int addMarketAccount(int m_id, String c_username, double balance){
+>>>>>>> fa4e0bc4f82015431767c2bd380c25d488f4379b
 	if (!userExists(c_username)){
 	    System.out.println("username does not exist");
 	    return 1;
@@ -166,7 +169,7 @@ public class DatabaseManager {
 	}catch (Exception e){ return 1; }
 	// get current balance and check if the amount will take the account below zero
 	if (getBalance(username) + amount < 0){
-		System.out.println("MA Balance will go under 0");
+		System.out.println("MA Balance will go under 0")
 		return 1;
 	}
 
