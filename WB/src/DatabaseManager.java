@@ -163,7 +163,12 @@ public class DatabaseManager {
 		return 1;
 	    }
 	}catch (Exception e){ return 1; }
-	
+	// get current balance and check if the amount will take the account below zero
+	if (getBalance(username) + amount < 0){
+		System.out.println("MA Balance will go under 0")
+		return 1;
+	}
+
 	s = String.format("UPDATE MarketAccount MA SET MA.amount=MA.amount+%.2f WHERE MA.username='%s';", amount, username);
 
 	return updateDB(s);
@@ -182,11 +187,13 @@ public class DatabaseManager {
 		return 1;
 	    }
 	}catch (Exception e){ return 1; }
+
+
 	s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%.2f WHERE SA.c_username='%s';", shares, c_username);
 	
 	return updateDB(s);
     }   
-
+	// -1 is the error value
     public double getBalance(String username){
 	if (!userExists(username)){
 	    return -1;
@@ -200,7 +207,22 @@ public class DatabaseManager {
 	}catch (Exception e){
 	    return -1;
 	}
-    }
+	}
+	// -1 is the error value;
+	public double getShares(String username){
+		if (!userExists(username)){
+			return -1;
+		}
+		String s = String.format("SELECT SA.shares FROM StockAccount SA WHERE SA.c_username='%s'", username);
+		resultSet = queryDB(s);
+		try{
+			if (!resultSet.next())
+				return -1;
+			return resultSet.getDouble("shares");
+		}catch (Exception e){
+			return -1;
+		}
+	}
     /*
     }
     public ResultSet history(String query) {
