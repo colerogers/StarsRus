@@ -601,38 +601,42 @@ public class DatabaseManager {
 	}
 
 	public String customerReport(){
-		ArrayList<String> list = new ArrayList<String>();
-		String query = "SELECT MA.*, SA.* "
-					+ "FROM MarketAccounts MA "
-					+ "LEFT JOIN StockAccount SA ON SA.c_username = MA.c_username";
+		//ArrayList<String> list = new ArrayList<String>();
+		//String query = "SELECT MA.*, SA.* "
+		//			+ "FROM MarketAccounts MA "
+		//			+ "LEFT JOIN StockAccount SA ON SA.c_username = MA.c_username";
+		StringBuilder sb = new StringBuilder();
+		String query = "SELECT * FROM MarketAccounts";
 		resultSet = queryDB(query);
 		String username, stock_symbol;
 		double balance, shares, stock_price;
 		try{
 			while (resultSet.next()){
 				username = resultSet.getString("c_username");
-				stock_symbol = resultSet.getString("stock_symbol");
-				shares = resultSet.getDouble("shares");
+				//stock_symbol = resultSet.getString("stock_symbol");
+				//shares = resultSet.getDouble("shares");
 				balance = resultSet.getDouble("balance");
-				stock_price = resultSet.getDouble("stock_price");
+				//stock_price = resultSet.getDouble("stock_price");
 				
-				String temp_s = "\n" + getCustomerName(username) + ": ";
-				temp_s += "Market Account Balance: " + balance;
-				temp_s += "\nStock Account(s): " + getCustomerStockAccountsShares(username);
+				String temp_s = "\n" + getCustomerName(username) + ":";
+				temp_s += "\n\tMarket Account Balance: " + balance;
+				temp_s += "\n\tStock Account(s): " + getCustomerStockAccountsShares(username);
 				
-				//TODO add stock stuff
-				list.add(temp_s);
+				sb.append(temp_s);
+				//list.add(temp_s);
 			}
 		}catch (Exception e){
 			p("customerReport error");
 		}
-		
+		return sb.toString();
+		/*
 //		return list.stream().toArray(String[]::new);
 		String s = "";
 		for(int i = 0; i < list.size(); i++){
 			s += list.get(i);
 		}
 		return s;
+		*/
 	}
 
 	// 
