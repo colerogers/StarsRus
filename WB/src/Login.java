@@ -70,12 +70,23 @@ public class Login extends JFrame {
 				String username = usernameField.getText();
 				String password = passwordField.getText();
 				
-				if(username.equals("test") && password.equals("test")){
-					try {
-						Login frame = new Login();
-						frame.setVisible(true);
-					} catch (Exception ex) {
-						ex.printStackTrace();
+				if(DB.validUser(username, password)){
+//					if(DB.isManager(username)){
+					if(false){
+						try {
+							Manager frame = new Manager();
+							frame.setVisible(true);
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+					else{
+						try {
+							Trader frame = new Trader(username);
+							frame.setVisible(true);
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
 					}
 					dispose();
 				}

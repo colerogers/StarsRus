@@ -104,12 +104,12 @@ public class DatabaseManager {
 	return true;
     }
 
-    public int addMarketAccount(int m_id, String c_username, double balance){
+    public int addMarketAccount(String c_username){
 	if (!userExists(c_username)){
 	    System.out.println("username does not exist");
 	    return 1;
 	}
-	String s = String.format("INSERT INTO MarketAccount (m_id, c_username, balance) WHERE (%d, %s, %f);", m_id, c_username, balance);
+	String s = String.format("INSERT INTO MarketAccount (c_username, balance) WHERE (%s, %f);", c_username, 1000);
 	// add the MA to the DB
 	return updateDB(s);
     }
@@ -133,7 +133,7 @@ public class DatabaseManager {
     /*
       market:0->stockAcct, 1->marketAcct
     */
-    public int updateMA(int m_id, String username, double amount) {
+    public int updateMA(String username, double amount) {
 	// check if user exists
 	if (!userExists(username)){
 	    System.out.println("username does not exist");
