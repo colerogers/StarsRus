@@ -211,19 +211,29 @@ public class DatabaseManager {
 	}
 	// try to add account, if 0 then created account, if 1 already exists
 	int code = addStockAccount(c_username, shares, stock_price, stock_symbol);
+	
+	//check to see if they have enough money to buy that number of shares
+	if(updateMA(c_username, -1*(shares * stock_price + 20)) == 1){
+		p("not enough money in MA");
+		return 1;
+	}
 
-	if (getShares(c_username, stock_symbol) + shares < 0){
+	//make sure after sell shares  > 0
+	if (getShares(c_username, stock_symbol) + shares <= 0){
 		System.out.println("SA shares will go under 0");
 		return 1;
 	}
 
 	String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%.2f WHERE SA.c_username='%s';", shares, c_username);
 	
-	if (updateDB(s) != 0)
+	if (updateDB(s) != 0){
+		p("error updating SA");
 		return 1;
+	}
 
 	return addTransaction(stock_symbol, 0, stock_price, 0, shares, "1", c_username);
     }   
+    
 	// -1 is the error value
     public double getBalance(String username){
 	if (!userExists(username)){
