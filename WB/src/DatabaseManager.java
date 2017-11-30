@@ -144,17 +144,32 @@ public class DatabaseManager {
 		if (stock_symbol.length() != 3){ p("stock_symbol not length 3"); return 1; }
 		if (!userExists(c_username)){ p("user doesn't exist"); return 1; }
 		// check account already exists
-		String s = String.format("SELECT SA.c_username FROM StockAccount SA WHERE SA.c_username='%s' AND SA.stock_symbol='%s';", c_username, stock_symbol);
+		if (hasStockAccount(c_username, stock_symbol) == 0){
+			p("account already exists");
+			return 1;
+		}
+
+		String s = String.format("INSERT INTO StockAccount (c_username, shares, stock_price, stock_symbol) VALUES (%s, %f, %f, %s);", c_username, shares, stock_price, stock_symbol);
+		// add the SA to the DB
+		return updateDB(s);
+	}
+
+	public int hasStockAccount(String username, String stock_symbol){
+		if (stock_symbol.length() != 3){ p("stock_symbol not length 3"); return 1; }
+		if (!userExists(username)){ p("user doesn't exist"); return 1; }
+		if (stockExists(stock_symbol) == 1){
+			p("stock does't exist in hasStockAccount");
+			return 1;
+		}
+		// check account already exists
+		String s = String.format("SELECT SA.c_username FROM StockAccount SA WHERE SA.c_username='%s' AND SA.stock_symbol='%s';", username, stock_symbol);
 		resultSet = queryDB(s);
 		try{
 			if (resultSet.next()){
-				return 1;
+				return 0;
 			}
-		}catch (Exception e){}
-
-		s = String.format("INSERT INTO StockAccount (c_username, shares, stock_price, stock_symbol) VALUES (%s, %f, %f, %s);", c_username, shares, stock_price, stock_symbol);
-		// add the MA to the DB
-		return updateDB(s);
+		}catch (Exception e){ p("exception in hasStockAccount"); return 1;}
+		return 1;
 	}
 
 	// return 0 if true, 1 if false
@@ -219,26 +234,62 @@ public class DatabaseManager {
 	// TODO: add to transactions
 	return addTransaction("", 0, 0, amount, 0, "1", username);
     }
-    
+	
+	// buy and sell shares of stocks
     public int updateSA(String c_username, double shares, double stock_price, String stock_symbol){
 	if (!userExists(c_username)){
 	    System.out.println("username does not exist");
 	    return 1;
 	}
-	// try to add account, if 0 then created account, if 1 already exists
-	int code = addStockAccount(c_username, shares, stock_price, stock_symbol);
-
-	if (getShares(c_username, stock_symbol) + shares < 0){
-		System.out.println("SA shares will go under 0");
-		return 1;
+	double amount = shares * stock_price + 20;
+	if (shares > 0){
+		// buy stock
+		if (getBalance(c_username) + amount < 0){
+			p(" balance will go under 0");
+			return 1;
+		}
+		if (hasStockAccount(c_username, stock_symbol) == 1){
+			p("customer does not have a stock account ... making one");
+			if (addStockAccount(c_username, shares, stock_price, stock_symbol) != 0){
+				p("stock account could not be created");
+				return 1;
+			}
+		}
+		if (updateMA(c_username, amount) != 0){
+			p("error withdrawing market account in updateSA");
+			return 1;
+		}
+		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%.2f WHERE SA.c_username='%s';", shares, c_username);
+		if (updateDB(s) != 0){
+			p("could not update the account");
+			return 1;
+		}
+		return addTransaction(stock_symbol, 0, stock_price, 0, shares, "1", c_username);
+	}
+	if (shares < 0){
+		// sell stock
+		if (hasStockAccount(c_username, stock_symbol) == 1){
+			p("customer does not have a stock account");
+			return 1;
+		}
+		if (getShares(c_username, stock_symbol) + shares < 0){
+			System.out.println("SA shares will go under 0");
+			return 1;
+		}
+		if (updateMA(c_username, amount) != 0){
+			p("error depositing market account");
+			return 1;
+		}
+		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%.2f WHERE SA.c_username='%s';", shares, c_username);
+		if (updateDB(s) != 0){
+			p("could not update the account");
+			return 1;
+		}
+		return addTransaction(stock_symbol, 0, stock_price, 0, shares, "1", c_username);
 	}
 
-	String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%.2f WHERE SA.c_username='%s';", shares, c_username);
-	
-	if (updateDB(s) != 0)
-		return 1;
-
-	return addTransaction(stock_symbol, 0, stock_price, 0, shares, "1", c_username);
+	p("tried to buy or sell zero shares");
+	return 1;
     }   
 	// -1 is the error value
     public double getBalance(String username){
