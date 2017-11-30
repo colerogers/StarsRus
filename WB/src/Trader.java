@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -16,6 +17,7 @@ public class Trader extends JFrame {
 	private JPanel contentPane;
 	private JTextField actionText;
 	private DatabaseManager DB = new DatabaseManager("ckoziol", "959");
+	private JTextField stockField;
 
 	/**
 	 * Launch the application.
@@ -49,7 +51,7 @@ public class Trader extends JFrame {
 				"Transaction History", "Check Stock/Actor", "List Movie Info",
 				"Top Movies in x Years", "Reviews for x Movie"};
 		JComboBox actionField = new JComboBox(options);
-		actionField.setBounds(194, 58, 196, 43);
+		actionField.setBounds(149, 54, 196, 43);
 		contentPane.add(actionField);
 		
 		JLabel lblSelectAction = new JLabel("Select Action");
@@ -57,14 +59,14 @@ public class Trader extends JFrame {
 		contentPane.add(lblSelectAction);
 		
 		actionText = new JTextField();
-		actionText.setBounds(194, 132, 196, 37);
+		actionText.setBounds(149, 127, 109, 37);
 		contentPane.add(actionText);
 		actionText.setColumns(10);
 		
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int selected = (int)e.getSource();
+				int selected = (int)actionField.getSelectedIndex();
 				switch(selected){
 				case 0://deposit
 					int d_value = Integer.parseInt(actionText.getText());
@@ -75,10 +77,20 @@ public class Trader extends JFrame {
 					DB.updateMA(current_user, w_value);
 					break;
 				case 2://buy
+					int b_shares = Integer.parseInt(actionText.getText());
+					String b_stock = stockField.getText();
+					double b_stock_price = 1; //HERE fix stock price
+					DB.updateSA(current_user, b_shares, b_stock_price, b_stock);
 					break;
 				case 3://sell
+					int s_shares = Integer.parseInt(actionText.getText());
+					String s_stock = stockField.getText();
+					double s_stock_price = 1; //HERE fix stock price
+					DB.updateSA(current_user, s_shares, s_stock_price, s_stock);
 					break;
 				case 4://show balance
+					double balance = DB.getBalance(current_user);
+					JOptionPane.showMessageDialog(null, "You account balance is: " + Double.toString(balance));
 					break;
 				case 5://transaction history
 					break;
@@ -99,7 +111,7 @@ public class Trader extends JFrame {
 //				getContentPane().repaint();
 			}
 		});
-		btnSubmit.setBounds(129, 203, 117, 25);
+		btnSubmit.setBounds(306, 214, 117, 25);
 		contentPane.add(btnSubmit);
 		
 		JLabel lblActionAmount = new JLabel("Action Amount");
@@ -107,7 +119,20 @@ public class Trader extends JFrame {
 		contentPane.add(lblActionAmount);
 		
 		JLabel lblifApplicable = new JLabel("(If applicable)");
-		lblifApplicable.setBounds(29, 154, 109, 15);
+		lblifApplicable.setBounds(29, 138, 109, 15);
 		contentPane.add(lblifApplicable);
+		
+		stockField = new JTextField();
+		stockField.setBounds(149, 181, 109, 29);
+		contentPane.add(stockField);
+		stockField.setColumns(10);
+		
+		JLabel lblStockSymbol = new JLabel("Stock symbol");
+		lblStockSymbol.setBounds(29, 180, 102, 15);
+		contentPane.add(lblStockSymbol);
+		
+		JLabel lblifAppilcable = new JLabel("(If appilcable)");
+		lblifAppilcable.setBounds(29, 195, 102, 15);
+		contentPane.add(lblifAppilcable);
 	}
 }

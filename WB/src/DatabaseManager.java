@@ -120,12 +120,12 @@ public class DatabaseManager {
 	return true;
     }
 
-    public int addMarketAccount(int m_id, String c_username, double balance){
+    public int addMarketAccount(String c_username){
 	if (!userExists(c_username)){
 	    System.out.println("username does not exist");
 	    return 1;
 	}
-	String s = String.format("INSERT INTO MarketAccount (c_username, balance) WHERE (%s, %f);", c_username, 1000);
+	String s = String.format("INSERT INTO MarketAccounts (c_username, balance) VALUES ('%s', %f);", c_username, 1000.0);
 	// add the MA to the DB
 	return updateDB(s);
     }
@@ -155,7 +155,7 @@ public class DatabaseManager {
 	    System.out.println("username does not exist");
 	    return 1;
 	}
-	String s = String.format("SELECT MA.username FROM MarketAccount MA WHERE MA.username='%s';", username);
+	String s = String.format("SELECT MA.username FROM MarketAccounts MA WHERE MA.username='%s';", username);
 	resultSet = queryDB(s);
 	try{
 	    if (!resultSet.next()){
@@ -175,7 +175,7 @@ public class DatabaseManager {
 	return updateDB(s);
     }
     
-    public int updateSA(int s_id, String c_username, double shares, double stock_price, String stock_symbol){
+    public int updateSA(String c_username, double shares, double stock_price, String stock_symbol){
 	if (!userExists(c_username)){
 	    System.out.println("username does not exist");
 	    return 1;
@@ -199,7 +199,7 @@ public class DatabaseManager {
 	if (!userExists(username)){
 	    return -1;
 	}
-	String s = String.format("SELECT MA.balance FROM MarketAccount MA WHERE MA.c_username='%s';", username);
+	String s = String.format("SELECT MA.balance FROM MarketAccounts MA WHERE MA.c_username='%s';", username);
 	resultSet = queryDB(s);
 	try{
 	    if (!resultSet.next())
