@@ -254,6 +254,105 @@ public class DatabaseManager {
 		}
 	}
 	
+	public int getMovieId(String movie){
+		String s = String.format("SELECT M.* FROM moviesDB.Movies M WHERE M.title = '%s'", movie);
+		resultSet = queryDB(s);
+		String movie_info = "";
+		try{
+			ResultSetMetaData rsmd = resultSet.getMetaData();
+			int columnsNumber = rsmd.getColumnCount();
+			int current_id = -1;
+			while (resultSet.next()) {
+			    for (int i = 1; i <= columnsNumber; i++) {
+			    	if(rsmd.getColumnName(i).equals("id")){
+			    		current_id = Integer.parseInt(resultSet.getString(i));
+			    	}
+			    	if(rsmd.getColumnName(i).equals("title") && resultSet.getString(i).equals(movie)){
+			    		return current_id;
+			    	}
+			    }
+			}
+		}catch(Exception e){
+			//do nothing rn
+		}
+		return -1;
+	}
+	
+	public String getReviews(String movie){
+		int movie_id = getMovieId(movie);
+		String s = String.format("SELECT R.* FROM moviesDB.Reviews R WHERE R.movie_id = %d", movie_id);
+		resultSet = queryDB(s);
+		String reviews = "";
+		try{
+			ResultSetMetaData rsmd = resultSet.getMetaData();
+			int columnsNumber = rsmd.getColumnCount();
+			reviews = "Reviews for - " + movie + ":\n"; 
+			while (resultSet.next()) {
+			    for (int i = 1; i <= columnsNumber; i++) {
+			    	if(rsmd.getColumnName(i).equals("author")){
+			    		reviews += resultSet.getString(i) + ": ";
+			    	}
+			    	else if(rsmd.getColumnName(i).equals("review")){
+			    		reviews += resultSet.getString(i) + "\n";
+			    	}
+			    }
+			}
+			return reviews;
+		}catch(Exception e){
+			//do nothing rn
+		}
+		return "No Reviews Found for " + movie;
+	}
+	
+	public String getTopMovies(int year1, int year2){
+		String s = String.format(
+				"SELECT M.title "
+				+ "FROM moviesDB.Movies M "
+				+ "WHERE M.rating >= 5 "
+				+ "AND M.production_year >= %d "
+				+ "AND M.production_year <= %d", year1, year2 );
+		
+		resultSet = queryDB(s);
+		String top_movies = "";
+		try{
+			ResultSetMetaData rsmd = resultSet.getMetaData();
+			int columnsNumber = rsmd.getColumnCount();
+			top_movies = String.format("Top Movies from %d - %d:\n", year1, year2); 
+			while (resultSet.next()) {
+			    for (int i = 1; i <= columnsNumber; i++) {
+			    	if(rsmd.getColumnName(i).equals("title")){
+			    		top_movies += resultSet.getString(i) + "\n";
+			    	}
+			    }
+			}
+			return top_movies;
+		}catch(Exception e){
+			//do nothing rn
+		}
+		return "No movies match this criteria";
+	}
+	
+	
+	public String getMovie(String movie){
+		String s = String.format("SELECT M.* FROM moviesDB.Movies M WHERE M.title = '%s'", movie);
+		resultSet = queryDB(s);
+		String movie_info = "";
+		try{
+			ResultSetMetaData rsmd = resultSet.getMetaData();
+			int columnsNumber = rsmd.getColumnCount();
+			while (resultSet.next()) {
+			    for (int i = 1; i <= columnsNumber; i++) {
+			        String columnValue = resultSet.getString(i);
+			        movie_info += rsmd.getColumnName(i) + ": " + columnValue + "\n"; 
+//			        System.out.print(columnValue + " " + rsmd.getColumnName(i));
+			    }
+			}
+		}catch(Exception e){
+			//do nothing rn
+		}
+		return movie_info;
+	}
+	
 	public double addTransaction(int t_id, String t_date, double deposit_amount, double withdraw_amount, double buy_amount, double sell_amount, String stock_symbol, double intrest_accrued, double stock_price){
 		return 0;
 	}
