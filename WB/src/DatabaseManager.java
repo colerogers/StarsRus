@@ -299,31 +299,42 @@ public class DatabaseManager {
 		return list.stream().toArray(String[]::new);
 	}
 
-    /*
-    }
-    public ResultSet history(String query) {
-	return resultSet;
-    }
-    public ResultSet intrest_M(String query) {
-	return resultSet;
-    }
-    public ResultSet statement_M(String query) {
-	return resultSet;
-    }
-    public ResultSet activeCustomer_M(String query) {
-	return resultSet;
-    }
-    public ResultSet DTER_M(String query) {
-	return resultSet;
-    }
-    public ResultSet customerReport_M(String query) {
-	return resultSet;
-    }
-    public ResultSet delete_M(String username) {
+	public String[] listActiveCustomers(){
+		ArrayList<String> list = new ArrayList<String>();
+
+		String query = "SELECT Temp.c_username "
+					  +"FROM { SELECT COUNT(T.stock_account_amount) AS shares, T.c_username "
+							   +"FROM Transactions T "
+							   +"GROUP BY T.c_username } AS Temp "
+					  +"WHERE Temp.shares >= 1000";
+		resultSet = queryDB(query);
+		try{
+			while (resultSet.next()){
+				list.add(resultSet.getString("c_username"));
+			}
+		}catch (Exception e){
+			p("resultSet access in list active customers");
+		}
+
+		return list.stream().toArray(String[]::new);
+	}
+
+	public int deleteTransactions(){
+
+		return 0;
+	}
 	
-	return resultSet;
-    }
-    */
+	public String[] generateGovernementReport(){
+		ArrayList<String> list = new ArrayList<String>();
+		
+		return list.stream().toArray(String[]::new);
+	}
+
+	public String[] customerReport(){
+		ArrayList<String> list = new ArrayList<String>();
+		
+		return list.stream().toArray(String[]::new);
+	}
 
     
 
