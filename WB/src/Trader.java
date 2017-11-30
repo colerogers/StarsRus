@@ -138,7 +138,7 @@ public class Trader extends JFrame {
 						int year1 = Integer.parseInt(temp_years[0]);
 						int year2 = Integer.parseInt(temp_years[1]);
 						JOptionPane.showMessageDialog(null, DB.getTopMovies(year1, year2));
-					} catch(NumberFormatException en){
+					} catch(NumberFormatException | ArrayIndexOutOfBoundsException ex){
 						JOptionPane.showMessageDialog(null, "Please enter valid dates in form YYYY-YYYY");
 					}
 					break;
