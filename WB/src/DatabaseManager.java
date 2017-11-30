@@ -61,6 +61,7 @@ public class DatabaseManager {
 	    resultSet = statement.executeQuery(query);
 	}catch (Exception e){
 	    System.out.println("executeQuery() failed");
+	    System.out.println(query);
 	    System.exit(1);
 	}
 	return resultSet;
@@ -180,7 +181,7 @@ public class DatabaseManager {
 	    System.out.println("username does not exist");
 	    return 1;
 	}
-	String s = String.format("SELECT MA.username FROM MarketAccounts MA WHERE MA.username='%s';", username);
+	String s = String.format("SELECT MA.c_username FROM MarketAccounts MA WHERE MA.c_username='%s';", username);
 	resultSet = queryDB(s);
 	try{
 	    if (!resultSet.next()){
@@ -195,7 +196,7 @@ public class DatabaseManager {
 		return 1;
 	}
 
-	s = String.format("UPDATE MarketAccounts MA SET MA.amount=MA.amount+%.2f WHERE MA.username='%s';", amount, username);
+	s = String.format("UPDATE MarketAccounts MA SET MA.balance=MA.balance+%.2f WHERE MA.c_username='%s';", amount, username);
 	if (updateDB(s) != 0)
 		return 1;
 	// TODO: add to transactions

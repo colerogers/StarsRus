@@ -61,6 +61,23 @@ public class Manager extends JFrame {
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				int selected = (int)actionField.getSelectedIndex();
+				switch(selected){
+				case 0://Add interest
+					break;
+				case 1://generate monthly statement
+					break;
+				case 2://list active customers
+					break;
+				case 3://DTER
+					break;
+				case 4://customer report
+					break;
+				case 5://delete transaction
+					break;
+				}
+
+				actionText.setText("");
 //				getContentPane().removeAll();
 //				getContentPane().revalidate();
 //				getContentPane().repaint();
@@ -68,5 +85,13 @@ public class Manager extends JFrame {
 		});
 		btnSubmit.setBounds(129, 203, 117, 25);
 		contentPane.add(btnSubmit);
+		
+		JLabel lblActionValue = new JLabel("Action Value");
+		lblActionValue.setBounds(29, 121, 90, 15);
+		contentPane.add(lblActionValue);
+		
+		JLabel lblifApplicable = new JLabel("(If applicable)");
+		lblifApplicable.setBounds(29, 143, 102, 15);
+		contentPane.add(lblifApplicable);
 	}
 }
