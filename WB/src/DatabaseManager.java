@@ -124,12 +124,12 @@ public class DatabaseManager {
 	return true;
     }
 
-    public int addMarketAccount(int m_id, String c_username, double balance){
+    public int addMarketAccount(String c_username, double balance){
 	if (!userExists(c_username)){
 	    System.out.println("username does not exist");
 	    return 1;
 	}
-	String s = String.format("INSERT INTO MarketAccount (m_id, c_username, balance) VALUES (%d, %s, %f);", m_id, c_username, balance);
+	String s = String.format("INSERT INTO MarketAccounts (c_username, balance) VALUES ('%s', %f);", c_username, balance);
 	// add the MA to the DB
 	return updateDB(s);
 	}
@@ -177,7 +177,7 @@ public class DatabaseManager {
 	    System.out.println("username does not exist");
 	    return 1;
 	}
-	String s = String.format("SELECT MA.username FROM MarketAccount MA WHERE MA.username='%s';", username);
+	String s = String.format("SELECT MA.username FROM MarketAccounts MA WHERE MA.username='%s';", username);
 	resultSet = queryDB(s);
 	try{
 	    if (!resultSet.next()){
@@ -192,7 +192,7 @@ public class DatabaseManager {
 		return 1;
 	}
 
-	s = String.format("UPDATE MarketAccount MA SET MA.amount=MA.amount+%.2f WHERE MA.username='%s';", amount, username);
+	s = String.format("UPDATE MarketAccounts MA SET MA.amount=MA.amount+%.2f WHERE MA.username='%s';", amount, username);
 	if (updateDB(s) != 0)
 		return 1;
 	// TODO: add to transactions
@@ -225,7 +225,7 @@ public class DatabaseManager {
 	if (!userExists(username)){
 	    return -1;
 	}
-	String s = String.format("SELECT MA.balance FROM MarketAccount MA WHERE MA.c_username='%s';", username);
+	String s = String.format("SELECT MA.balance FROM MarketAccounts MA WHERE MA.c_username='%s';", username);
 	resultSet = queryDB(s);
 	try{
 	    if (!resultSet.next())
@@ -249,6 +249,11 @@ public class DatabaseManager {
 			return 0;
 		}
 	}
+	
+	public double addTransaction(int t_id, String t_date, double deposit_amount, double withdraw_amount, double buy_amount, double sell_amount, String stock_symbol, double intrest_accrued, double stock_price){
+
+	}
+
     /*
     }
     public ResultSet history(String query) {
