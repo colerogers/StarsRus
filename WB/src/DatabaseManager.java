@@ -589,7 +589,7 @@ public class DatabaseManager {
 		}
 		String s = String.format("SELECT SA.stock_symbol, SA.shares FROM StockAccount SA WHERE SA.c_username='%s';", username);
 		resultSet = queryDB(s);
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder("");
 		try{
 			while (resultSet.next()){
 				sb.append(resultSet.getString("stock_symbol")+":"+resultSet.getDouble("shares"));
@@ -618,11 +618,12 @@ public class DatabaseManager {
 				balance = resultSet.getDouble("balance");
 				//stock_price = resultSet.getDouble("stock_price");
 				
-				String temp_s = "\n" + getCustomerName(username) + ":";
-				temp_s += "\n\tMarket Account Balance: " + balance;
-				temp_s += "\n\tStock Account(s): " + getCustomerStockAccountsShares(username);
+				sb.append(getCustomerName(username) + ":");
+				sb.append("\n\tMarket Account Balance: " + balance);
+				sb.append("\n\tStock Account(s): " + getCustomerStockAccountsShares(username));
+				if (resultSet.next())
+					sb.append("\n");
 				
-				sb.append(temp_s);
 				//list.add(temp_s);
 			}
 		}catch (Exception e){
