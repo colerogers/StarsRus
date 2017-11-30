@@ -91,8 +91,7 @@ public class DatabaseManager {
 	}
 	String s = String.format("INSERT INTO MarketAccount (m_id, c_username, balance) WHERE (%d, %s, %f);", m_id, c_username, balance);
 	// add the MA to the DB
-	updateDB(s);
-	return 0;
+	return updateDB(s);
     }
 
     public int addUser(String name, String state, String pNumber, String email, String taxId, String address, String username, int manager, String password){
@@ -108,8 +107,7 @@ public class DatabaseManager {
 
 	String s = String.format("INSERT INTO Users (c_username, name, state, phone, email, tax_id, address, manager, password) VALUES ('%s', '%s','%s','%s','%s','%s','%s', %d, '%s')",username,name,state, pNumber,email, taxId, address, manager, password);
 
-	updateDB(s);
-	return 0;
+	return updateDB(s);
     }
 
     /*
@@ -130,8 +128,7 @@ public class DatabaseManager {
 	// }
 	s = String.format("UPDATE MarketAccount MA SET MA.amount=%d WHERE MA.username='%s';", amount, username);
 
-	updateDB(s);
-	return 0;
+	return updateDB(s);
     }
     public int updateSA(int s_id, String c_username, double shares, double stock_price, String stock_symbol){
 	if (!userExists(c_username)){
@@ -145,8 +142,7 @@ public class DatabaseManager {
 	//     return 1;
 	// }
 
-	updateDB(s);
-	return 0;
+	return updateDB(s);
     }
    
     public ResultSet buy(String query) {
