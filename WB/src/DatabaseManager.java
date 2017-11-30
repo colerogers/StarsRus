@@ -565,6 +565,41 @@ public class DatabaseManager {
 		return list.stream().toArray(String[]::new);
 	}
 
+	// "" is the error condition
+	public String getCustomerName(String username){
+		if (!userExists(username)){
+			p("username doesn't exist");
+			return "";
+		}
+		String s = String.format("SELECT U.name FROM Users U WHERE U.c_username='%s';", username);
+		resultSet = queryDB(s);
+		try{
+			if (resultSet.next())
+				return resultSet.getString("name");
+		}catch (Exception e){ p("exception in getCustomerName"); }
+		return "";
+	}
+
+	// "" is the error condidtion
+	// return: "stock_symbol_1:shares_1, stock_symbol_2:shares_2, ..."
+	public String getCustomerStockAccountsShares(String username){
+		if (!userExists(username)){
+			p("username doesn't exist");
+			return "";
+		}
+		String s = String.format("SELECT SA.stock_symbol, SA.shares FROM StockAccount SA WHERE SA.c_username='%s';", username);
+		resultSet = queryDB(s);
+		StringBuilder sb = new StringBuilder();
+		try{
+			while (resultSet.next()){
+				sb.append(resultSet.getString("stock_symbol")+":"+resultSet.getDouble("shares"));
+				if (resultSet.next())
+					sb.append(", ");
+			}
+		}catch (Exception e){ p("exception in getCustomerStockAccountsShares"); }
+		return sb.toString();
+	}
+
 	public String customerReport(){
 		ArrayList<String> list = new ArrayList<String>();
 		String query = "SELECT MA.*, SA.* "
@@ -581,8 +616,10 @@ public class DatabaseManager {
 				balance = resultSet.getDouble("balance");
 				stock_price = resultSet.getDouble("stock_price");
 				
-				String temp_s = "\n" + username + ": ";
+				String temp_s = "\n" + getCustomerName(username) + ": ";
 				temp_s += "Market Account Balance: " + balance;
+				temp_s += "\nStock Account(s): " + getCustomerStockAccountsShares(username);
+				
 				//TODO add stock stuff
 				list.add(temp_s);
 			}
@@ -596,6 +633,11 @@ public class DatabaseManager {
 			s += list.get(i);
 		}
 		return s;
+	}
+
+	// 
+	public int endOfDay(){
+		return 1;
 	}
 
     
