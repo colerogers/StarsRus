@@ -11,11 +11,13 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+
 public class Login extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField usernameField;
 	private JTextField passwordField;
+	private DatabaseManager DB = new DatabaseManager("ckoziol", "959");
 
 	/**
 	 * Launch the application.
@@ -88,6 +90,13 @@ public class Login extends JFrame {
 		JButton btnNewButton = new JButton("Register");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					Register frame = new Register();
+					frame.setVisible(true);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				dispose();
 			}
 		});
 		btnNewButton.setBounds(56, 201, 117, 25);

@@ -1,0 +1,64 @@
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+
+public class Register extends JFrame {
+
+	private JPanel contentPane;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Register frame = new Register();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Register() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JLabel lblName = new JLabel("Name");
+		lblName.setBounds(40, 34, 70, 15);
+		contentPane.add(lblName);
+		
+		JLabel lblState = new JLabel("State");
+		lblState.setBounds(40, 83, 70, 15);
+		contentPane.add(lblState);
+		
+		JLabel lblPhoneNumber = new JLabel("Phone Number");
+		lblPhoneNumber.setBounds(40, 123, 118, 15);
+		contentPane.add(lblPhoneNumber);
+		
+		JLabel lblEmail = new JLabel("Email");
+		lblEmail.setBounds(57, 166, 70, 21);
+		contentPane.add(lblEmail);
+		
+		JLabel lblTaxId = new JLabel("Tax ID");
+		lblTaxId.setBounds(235, 23, 70, 15);
+		contentPane.add(lblTaxId);
+		
+		JLabel lblAddress = new JLabel("Address");
+		lblAddress.setBounds(224, 71, 70, 15);
+		contentPane.add(lblAddress);
+	}
+}

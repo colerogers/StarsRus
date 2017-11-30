@@ -78,9 +78,9 @@ public class DatabaseManager {
     public boolean userExists(String username){
 	String check = String.format("SELECT name FROM Users U WHERE U.c_username='%s';", username);
 	resultSet = queryDB(check);
-	if (!resultSet.next()){
-	    return false;
-	}
+	// if (!resultSet.next()){
+	//     return false;
+	// }
 	return true;
     }
 
@@ -123,27 +123,27 @@ public class DatabaseManager {
 	}
 	String s = String.format("SELECT MA.username FROM MarketAccount MA WHERE MA.username='%s';", username);
 	resultSet = queryDB(s);
-	if (!resultSet.next()){
-	    // create market account for user and add $1000
-	    System.out.println("Market Account does not exist");
-	    return 1;
-	}
-	s = String.Format("UPDATE MarketAccount MA SET MA.amount=%d WHERE MA.username='%s';", amount, username);
+	// if (!resultSet.next()){
+	//     // create market account for user and add $1000
+	//     System.out.println("Market Account does not exist");
+	//     return 1;
+	// }
+	s = String.format("UPDATE MarketAccount MA SET MA.amount=%d WHERE MA.username='%s';", amount, username);
 
 	updateDB(s);
 	return 0;
     }
-    public int updateSA(int s_id, String, String c_username, double shares, double stock_price, String stock_symbol){
+    public int updateSA(int s_id, String c_username, double shares, double stock_price, String stock_symbol){
 	if (!userExists(c_username)){
 	    System.out.println("username does not exist");
 	    return 1;
 	}
 	String s = String.format("SELECT SA.c_username FROM StockAccount SA WHERE SA.c_username='%s';", c_username);
 	resultSet = queryDB(s);
-	if (!resultSet.next()){
-	    System.out.println("Stock Account does not exist");
-	    return 1;
-	}
+	// if (!resultSet.next()){
+	//     System.out.println("Stock Account does not exist");
+	//     return 1;
+	// }
 
 	updateDB(s);
 	return 0;
@@ -189,7 +189,7 @@ public class DatabaseManager {
 	}
 
 	//ResultSet rs = db.queryDB("SELECT * FROM Actors;");
-	db.openMarketAccount("abc","CA", "6198189328", "test@gmail", "123","123", "abc",0, "abc");
+	// db.openMarketAccount("abc","CA", "6198189328", "test@gmail", "123","123", "abc",0, "abc");
 	/*
 	  try{
 	  while (rs.next()){
