@@ -51,6 +51,7 @@ public class DatabaseManager {
       ex~ SELECT
      */
     public ResultSet queryDB(String query){
+	
 	try{
 	    resultSet = statement.executeQuery(query);
 	}catch (Exception e){
@@ -78,9 +79,28 @@ public class DatabaseManager {
     public boolean userExists(String username){
 	String check = String.format("SELECT name FROM Users U WHERE U.c_username='%s';", username);
 	resultSet = queryDB(check);
-	if (!resultSet.next()){
+	try{
+	    if (!resultSet.next()){
+		return false;
+	    }
+	}catch (Exception e){
 	    return false;
 	}
+	return true;
+    }
+
+    public boolean validUser(String username, String password){
+	String check = String.format("SELECT U.password FROM Users U WHERE U.c_username='%s';", username);
+	resultSet = queryDB(check);
+	try{
+	    String pw;
+	    if (resultSet.next())
+		pw = resultSet.getString("password");
+	    else
+		return false;
+	    if (!pw.equals(password))
+		return false;
+	}catch (Exception e){ return false; }
 	return true;
     }
 
@@ -121,35 +141,41 @@ public class DatabaseManager {
 	}
 	String s = String.format("SELECT MA.username FROM MarketAccount MA WHERE MA.username='%s';", username);
 	resultSet = queryDB(s);
-	if (!resultSet.next()){
-	    // create market account for user and add $1000
-	    System.out.println("Market Account does not exist");
-	    return 1;
-	}
-	s = String.Format("UPDATE MarketAccount MA SET MA.amount=%d WHERE MA.username='%s';", amount, username);
+	try{
+	    if (!resultSet.next()){
+		// create market account for user and add $1000
+		System.out.println("Market Account does not exist");
+		return 1;
+	    }
+	}catch (Exception e){ return 1; }
+	
+	s = String.format("UPDATE MarketAccount MA SET MA.amount=MA.amount+%.2f WHERE MA.username='%s';", amount, username);
 
 	return updateDB(s);
     }
-    public int updateSA(int s_id, String, String c_username, double shares, double stock_price, String stock_symbol){
+    
+    public int updateSA(int s_id, String c_username, double shares, double stock_price, String stock_symbol){
 	if (!userExists(c_username)){
 	    System.out.println("username does not exist");
 	    return 1;
 	}
 	String s = String.format("SELECT SA.c_username FROM StockAccount SA WHERE SA.c_username='%s';", c_username);
 	resultSet = queryDB(s);
-	if (!resultSet.next()){
-	    System.out.println("Stock Account does not exist");
-	    return 1;
-	}
-
+	try{
+	    if (!resultSet.next()){
+		System.out.println("Stock Account does not exist");
+		return 1;
+	    }
+	}catch (Exception e){ return 1; }
+	s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%f WHERE SA.c_username='%s';", shares, c_username);
+	
 	return updateDB(s);
+    }   
+
+    /*
+    public double getBalance(String username){
     }
-   
-    public ResultSet buy(String query) {
-	return resultSet;
-    }
-    public ResultSet sell(String query) {
-	return resultSet;
+    
     }
     public ResultSet history(String query) {
 	return resultSet;
@@ -173,6 +199,7 @@ public class DatabaseManager {
 	
 	return resultSet;
     }
+    */
 
     
 
@@ -185,7 +212,7 @@ public class DatabaseManager {
 	}
 
 	//ResultSet rs = db.queryDB("SELECT * FROM Actors;");
-	db.openMarketAccount("abc","CA", "6198189328", "test@gmail", "123","123", "abc",0, "abc");
+	//db.openMarketAccount("abc","CA", "6198189328", "test@gmail", "123","123", "abc",0, "abc");
 	/*
 	  try{
 	  while (rs.next()){
