@@ -291,6 +291,7 @@ public class DatabaseManager {
 	p("tried to buy or sell zero shares");
 	return 1;
     }   
+    
 	// -1 is the error value
     public double getBalance(String username){
 	if (!userExists(username)){

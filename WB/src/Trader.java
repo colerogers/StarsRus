@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.*;
 
 public class Trader extends JFrame {
 
@@ -47,9 +48,26 @@ public class Trader extends JFrame {
 		contentPane.setLayout(null);
 
 
-		String[] options = {"Deposit", "Withdraw", "Buy", "Sell", "Show Balance",
+		String[] trader_options = {"Deposit", "Withdraw", "Buy", "Sell", "Show Balance",
 				"Transaction History", "Check Stock/Actor", "List Movie Info",
 				"Top Movies in x Years", "Reviews for x Movie"};
+		
+		String[] manager_options = {"Add Interest", "Generate Monthly Statement", "List Active Customers", "DTER",
+				"Customer Report", "Delete Transaction"};
+		
+
+		ArrayList<String> list = new ArrayList<String>();
+		for(int i =0; i < trader_options.length; i++){
+			list.add(trader_options[i]);
+		}
+		if(DB.isManager(current_user)){
+			for(int i =0; i < manager_options.length; i++){
+				list.add(manager_options[i]);
+			}
+		}
+		String[] options = list.toArray(new String[0]);
+		
+
 		JComboBox actionField = new JComboBox(options);
 		actionField.setBounds(149, 54, 196, 43);
 		contentPane.add(actionField);
@@ -120,13 +138,31 @@ public class Trader extends JFrame {
 						int year1 = Integer.parseInt(temp_years[0]);
 						int year2 = Integer.parseInt(temp_years[1]);
 						JOptionPane.showMessageDialog(null, DB.getTopMovies(year1, year2));
-					} catch(NumberFormatException en){
+					} catch(NumberFormatException | ArrayIndexOutOfBoundsException ex){
 						JOptionPane.showMessageDialog(null, "Please enter valid dates in form YYYY-YYYY");
 					}
 					break;
 				case 9://reviews for x movie
 					String r_movie = actionText.getText();
 					JOptionPane.showMessageDialog(null, DB.getReviews(r_movie));
+					break;
+				case 10://Add interest
+					break;
+				case 11://generate monthly statement
+					break;
+				case 12://list active customers
+					JOptionPane.showMessageDialog(null, DB.listActiveCustomers());
+					break;
+				case 13://DTER
+					break;
+				case 14://customer report
+					JOptionPane.showMessageDialog(null, DB.customerReport());
+					break;
+				case 15://delete transactions
+					if(1 == DB.deleteTransactions()){
+						JOptionPane.showMessageDialog(null, "Error deleting Transactions");
+					}
+					JOptionPane.showMessageDialog(null, "Transactions for this month deleted");
 					break;
 				}
 				
