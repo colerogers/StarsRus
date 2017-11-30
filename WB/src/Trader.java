@@ -101,10 +101,19 @@ public class Trader extends JFrame {
 				case 6://check stock/actor
 					break;
 				case 7://list movie info
+					String movie = actionText.getText();
+					JOptionPane.showMessageDialog(null, DB.getMovie(movie));
 					break;
 				case 8://top movies in x years
+					String t_movie = actionText.getText();
+					String[] temp_years = t_movie.split("-");
+					int year1 = Integer.parseInt(temp_years[0]);
+					int year2 = Integer.parseInt(temp_years[1]);
+					JOptionPane.showMessageDialog(null, DB.getTopMovies(year1, year2));
 					break;
 				case 9://reviews for x movie
+					String r_movie = actionText.getText();
+					JOptionPane.showMessageDialog(null, DB.getReviews(r_movie));
 					break;
 				}
 				
