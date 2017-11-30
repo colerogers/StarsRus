@@ -157,6 +157,22 @@ public class DatabaseManager {
 		return updateDB(s);
 	}
 
+	// return 0 if true, 1 if false
+	public int stockExists(String stock_symbol){
+		String s = String.format("SELECT S.stock_symbol FROM Stocks S WHERE s.stock_symbol='%s'", stock_symbol);
+		resultSet = queryDB(s);
+		try{
+			if (!resultSet.next()){
+				p("stock doesn't exist");
+				return 1;
+			}
+		}catch (Exception e){
+			p("exception, stock doesn't exist");
+			return 1;
+		}
+		return 0;
+	}
+
     public int addUser(String name, String state, String pNumber, String email, String taxId, String address, String username, int manager, String password){
 	if (state.length() != 2){
 	    System.out.println("State must be 2 letters");
