@@ -109,14 +109,19 @@ public class Trader extends JFrame {
 				case 2://buy
 					double b_shares = Double.parseDouble(actionText.getText());
 					String b_stock = stockField.getText();
-					DB.updateSA(current_user, b_shares, 20, b_stock);
+					double b_stock_price = 1; // TODO: get cur price
+					if (DB.updateSA(current_user, b_shares, b_stock_price, b_stock) == 0){
+						JOptionPane.showMessageDialog(null, "Successfully bought shares");
+					}else{
+						JOptionPane.showMessageDialog(null, "Error occured");
+					}
 					break;
 				case 3://sell
-					int s_shares = Integer.parseInt(actionText.getText());
+					int s_shares = Integer.parseInt(actionText.getText()) * (-1);
 					String s_stock = stockField.getText();
 					double s_stock_price = 1; //HERE fix stock price
 					if(DB.updateSA(current_user, s_shares, s_stock_price, s_stock) == 0){
-						JOptionPane.showMessageDialog(null, "Successfully bought shares");
+						JOptionPane.showMessageDialog(null, "Successfully sold shares");
 					}
 					else{
 						JOptionPane.showMessageDialog(null, "Error occured");
