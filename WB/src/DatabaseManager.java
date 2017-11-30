@@ -149,7 +149,7 @@ public class DatabaseManager {
 			return 1;
 		}
 
-		String s = String.format("INSERT INTO StockAccount (stock_symbol, c_username, shares, stock_price) VALUES ('%s', '%s', %f, %f);", stock_symbol, c_username, shares, stock_price);
+		String s = String.format("INSERT INTO StockAccount (c_username, shares, stock_price, stock_symbol) VALUES ('%s', %f, %f, '%s');", c_username, shares, stock_price, stock_symbol);
 		// add the SA to the DB
 		return updateDB(s);
 	}
