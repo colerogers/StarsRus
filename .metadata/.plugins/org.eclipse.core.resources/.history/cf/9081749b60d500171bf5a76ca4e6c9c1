@@ -1,0 +1,126 @@
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+
+public class Register extends JFrame {
+
+	private JPanel contentPane;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JTextField textField_2;
+	private JTextField textField_3;
+	private JTextField textField_4;
+	private JTextField textField_5;
+	private JTextField textField_6;
+	private JTextField textField_7;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Register frame = new Register();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Register() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JLabel lblName = new JLabel("Name");
+		lblName.setBounds(40, 34, 70, 15);
+		contentPane.add(lblName);
+		
+		JLabel lblState = new JLabel("State");
+		lblState.setBounds(40, 83, 70, 15);
+		contentPane.add(lblState);
+		
+		JLabel lblPhoneNumber = new JLabel("Phone #");
+		lblPhoneNumber.setBounds(12, 119, 118, 15);
+		contentPane.add(lblPhoneNumber);
+		
+		JLabel lblEmail = new JLabel("Email");
+		lblEmail.setBounds(40, 166, 70, 21);
+		contentPane.add(lblEmail);
+		
+		JLabel lblTaxId = new JLabel("Tax ID");
+		lblTaxId.setBounds(235, 23, 70, 15);
+		contentPane.add(lblTaxId);
+		
+		JLabel lblAddress = new JLabel("Address");
+		lblAddress.setBounds(235, 71, 70, 15);
+		contentPane.add(lblAddress);
+		
+		JLabel lblUsername = new JLabel("Username");
+		lblUsername.setBounds(235, 129, 82, 15);
+		contentPane.add(lblUsername);
+		
+		JLabel lblPassword = new JLabel("Password");
+		lblPassword.setBounds(235, 169, 70, 15);
+		contentPane.add(lblPassword);
+		
+		textField = new JTextField();
+		textField.setBounds(108, 21, 114, 19);
+		contentPane.add(textField);
+		textField.setColumns(10);
+		
+		textField_1 = new JTextField();
+		textField_1.setBounds(309, 12, 114, 19);
+		contentPane.add(textField_1);
+		textField_1.setColumns(10);
+		
+		textField_2 = new JTextField();
+		textField_2.setBounds(309, 69, 114, 19);
+		contentPane.add(textField_2);
+		textField_2.setColumns(10);
+		
+		textField_3 = new JTextField();
+		textField_3.setBounds(309, 117, 114, 19);
+		contentPane.add(textField_3);
+		textField_3.setColumns(10);
+		
+		textField_4 = new JTextField();
+		textField_4.setBounds(309, 167, 114, 19);
+		contentPane.add(textField_4);
+		textField_4.setColumns(10);
+		
+		textField_5 = new JTextField();
+		textField_5.setBounds(108, 69, 114, 19);
+		contentPane.add(textField_5);
+		textField_5.setColumns(10);
+		
+		textField_6 = new JTextField();
+		textField_6.setBounds(108, 110, 114, 19);
+		contentPane.add(textField_6);
+		textField_6.setColumns(10);
+		
+		textField_7 = new JTextField();
+		textField_7.setBounds(108, 167, 114, 19);
+		contentPane.add(textField_7);
+		textField_7.setColumns(10);
+		
+		JButton btnCreateUser = new JButton("Create User");
+		btnCreateUser.setBounds(174, 212, 131, 25);
+		contentPane.add(btnCreateUser);
+	}
+}

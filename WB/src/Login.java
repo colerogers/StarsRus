@@ -11,11 +11,13 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+
 public class Login extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField usernameField;
 	private JTextField passwordField;
+	private DatabaseManager DB = new DatabaseManager("ckoziol", "959");
 
 	/**
 	 * Launch the application.
@@ -68,12 +70,23 @@ public class Login extends JFrame {
 				String username = usernameField.getText();
 				String password = passwordField.getText();
 				
-				if(username.equals("test") && password.equals("test")){
-					try {
-						Login frame = new Login();
-						frame.setVisible(true);
-					} catch (Exception ex) {
-						ex.printStackTrace();
+				if(DB.validUser(username, password)){
+//					if(DB.isManager(username)){
+					if(false){
+						try {
+							Manager frame = new Manager();
+							frame.setVisible(true);
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+					else{
+						try {
+							Trader frame = new Trader(username);
+							frame.setVisible(true);
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
 					}
 					dispose();
 				}
@@ -88,6 +101,13 @@ public class Login extends JFrame {
 		JButton btnNewButton = new JButton("Register");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					Register frame = new Register();
+					frame.setVisible(true);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				dispose();
 			}
 		});
 		btnNewButton.setBounds(56, 201, 117, 25);

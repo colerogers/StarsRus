@@ -1,0 +1,142 @@
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class Register extends JFrame {
+
+	private JPanel contentPane;
+	private JTextField nameField;
+	private JTextField taxField;
+	private JTextField addressField;
+	private JTextField usernameField;
+	private JTextField passwordField;
+	private JTextField stateField;
+	private JTextField phoneField;
+	private JTextField emailField;
+	private DatabaseManager DB = new DatabaseManager("ckoziol", "959");
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Register frame = new Register();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Register() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JLabel lblName = new JLabel("Name");
+		lblName.setBounds(40, 34, 70, 15);
+		contentPane.add(lblName);
+		
+		JLabel lblState = new JLabel("State");
+		lblState.setBounds(40, 83, 70, 15);
+		contentPane.add(lblState);
+		
+		JLabel lblPhoneNumber = new JLabel("Phone #");
+		lblPhoneNumber.setBounds(12, 119, 118, 15);
+		contentPane.add(lblPhoneNumber);
+		
+		JLabel lblEmail = new JLabel("Email");
+		lblEmail.setBounds(40, 166, 70, 21);
+		contentPane.add(lblEmail);
+		
+		JLabel lblTaxId = new JLabel("Tax ID");
+		lblTaxId.setBounds(235, 23, 70, 15);
+		contentPane.add(lblTaxId);
+		
+		JLabel lblAddress = new JLabel("Address");
+		lblAddress.setBounds(235, 71, 70, 15);
+		contentPane.add(lblAddress);
+		
+		JLabel lblUsername = new JLabel("Username");
+		lblUsername.setBounds(235, 129, 82, 15);
+		contentPane.add(lblUsername);
+		
+		JLabel lblPassword = new JLabel("Password");
+		lblPassword.setBounds(235, 169, 70, 15);
+		contentPane.add(lblPassword);
+		
+		nameField = new JTextField();
+		nameField.setBounds(108, 21, 114, 19);
+		contentPane.add(nameField);
+		nameField.setColumns(10);
+		
+		taxField = new JTextField();
+		taxField.setBounds(309, 12, 114, 19);
+		contentPane.add(taxField);
+		taxField.setColumns(10);
+		
+		addressField = new JTextField();
+		addressField.setBounds(309, 69, 114, 19);
+		contentPane.add(addressField);
+		addressField.setColumns(10);
+		
+		usernameField = new JTextField();
+		usernameField.setBounds(309, 117, 114, 19);
+		contentPane.add(usernameField);
+		usernameField.setColumns(10);
+		
+		passwordField = new JTextField();
+		passwordField.setBounds(309, 167, 114, 19);
+		contentPane.add(passwordField);
+		passwordField.setColumns(10);
+		
+		stateField = new JTextField();
+		stateField.setBounds(108, 69, 114, 19);
+		contentPane.add(stateField);
+		stateField.setColumns(10);
+		
+		phoneField = new JTextField();
+		phoneField.setBounds(108, 110, 114, 19);
+		contentPane.add(phoneField);
+		phoneField.setColumns(10);
+		
+		emailField = new JTextField();
+		emailField.setBounds(108, 167, 114, 19);
+		contentPane.add(emailField);
+		emailField.setColumns(10);
+		
+		JButton btnCreateUser = new JButton("Create User");
+		btnCreateUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String username = usernameField.getText();
+				String password = passwordField.getText();
+				String phone    = phoneField.getText();
+				String email    = emailField.getText();
+				String tax      = taxField.getText();
+				String address  = addressField.getText();
+				String name     = nameField.getText();
+				String state    = stateField.getText();
+				
+			}
+		});
+		btnCreateUser.setBounds(174, 212, 131, 25);
+		contentPane.add(btnCreateUser);
+	}
+}

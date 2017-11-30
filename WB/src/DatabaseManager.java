@@ -109,6 +109,7 @@ public class DatabaseManager {
 	return true;
     }
 
+
     public boolean isManager(String username){
 	String check = String.format("SELECT U.manager FROM Users U WHERE U.c_username='%s';", username);
 	resultSet = queryDB(check);
@@ -124,12 +125,14 @@ public class DatabaseManager {
 	return true;
     }
 
-    public int addMarketAccount(String c_username, double balance){
+    public int addMarketAccount(String c_username){
 	if (!userExists(c_username)){
 	    System.out.println("username does not exist");
 	    return 1;
 	}
-	String s = String.format("INSERT INTO MarketAccounts (c_username, balance) VALUES ('%s', %f);", c_username, balance);
+
+	String s = String.format("INSERT INTO MarketAccounts (c_username, balance) VALUES ('%s', %f);", c_username, 1000.0);
+
 	// add the MA to the DB
 	return updateDB(s);
 	}
@@ -171,7 +174,7 @@ public class DatabaseManager {
     /*
       market:0->stockAcct, 1->marketAcct
     */
-    public int updateMA(int m_id, String username, double amount) {
+    public int updateMA(String username, double amount) {
 	// check if user exists
 	if (!userExists(username)){
 	    System.out.println("username does not exist");
@@ -199,7 +202,7 @@ public class DatabaseManager {
 	return 1;
     }
     
-    public int updateSA(int s_id, String c_username, double shares, double stock_price, String stock_symbol){
+    public int updateSA(String c_username, double shares, double stock_price, String stock_symbol){
 	if (!userExists(c_username)){
 	    System.out.println("username does not exist");
 	    return 1;
@@ -251,7 +254,7 @@ public class DatabaseManager {
 	}
 	
 	public double addTransaction(int t_id, String t_date, double deposit_amount, double withdraw_amount, double buy_amount, double sell_amount, String stock_symbol, double intrest_accrued, double stock_price){
-
+		return 0;
 	}
 
     /*
@@ -291,6 +294,7 @@ public class DatabaseManager {
 	}
 
 	//ResultSet rs = db.queryDB("SELECT * FROM Actors;");
+
 	//db.openMarketAccount("abc","CA", "6198189328", "test@gmail", "123","123", "abc",0, "abc");
 	/*
 	  try{

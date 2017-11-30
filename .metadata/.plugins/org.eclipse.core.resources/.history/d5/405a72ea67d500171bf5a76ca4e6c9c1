@@ -1,0 +1,105 @@
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+
+public class Login extends JFrame {
+
+	private JPanel contentPane;
+	private JTextField usernameField;
+	private JTextField passwordField;
+	private DatabaseManager DB = new DatabaseManager("ckoziol", "959");
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Login frame = new Login();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Login() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JLabel lblUsername = new JLabel("username");
+		lblUsername.setBounds(56, 61, 112, 27);
+		contentPane.add(lblUsername);
+		
+		JLabel lblPassword = new JLabel("password");
+		lblPassword.setBounds(56, 119, 70, 15);
+		contentPane.add(lblPassword);
+		
+		usernameField = new JTextField();
+		usernameField.setBounds(188, 65, 114, 19);
+		contentPane.add(usernameField);
+		usernameField.setColumns(10);
+		
+		passwordField = new JTextField();
+		passwordField.setBounds(188, 117, 114, 19);
+		contentPane.add(passwordField);
+		passwordField.setColumns(10);
+		
+		JButton btnLogin = new JButton("login");
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String username = usernameField.getText();
+				String password = passwordField.getText();
+				
+				if(username.equals("test") && password.equals("test")){
+					try {
+						Login frame = new Login();
+						frame.setVisible(true);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					dispose();
+				}
+				else{
+					JOptionPane.showMessageDialog(null,  "Invalid Username or Password");
+				}
+			}
+		});
+		btnLogin.setBounds(268, 201, 117, 25);
+		contentPane.add(btnLogin);
+		
+		JButton btnNewButton = new JButton("Register");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Register frame = new Register();
+					frame.setVisible(true);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				dispose();
+			}
+		});
+		btnNewButton.setBounds(56, 201, 117, 25);
+		contentPane.add(btnNewButton);
+	}
+}
