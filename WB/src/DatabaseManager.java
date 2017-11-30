@@ -252,6 +252,11 @@ public class DatabaseManager {
 			return 0;
 		}
 	}
+	
+	public double addTransaction(int t_id, String t_date, double deposit_amount, double withdraw_amount, double buy_amount, double sell_amount, String stock_symbol, double intrest_accrued, double stock_price){
+		return 0;
+	}
+
     /*
     }
     public ResultSet history(String query) {
