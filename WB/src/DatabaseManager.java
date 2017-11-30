@@ -195,7 +195,7 @@ public class DatabaseManager {
 		return 1;
 	}
 
-	s = String.format("UPDATE MarketAccount MA SET MA.amount=MA.amount+%.2f WHERE MA.username='%s';", amount, username);
+	s = String.format("UPDATE MarketAccounts MA SET MA.amount=MA.amount+%.2f WHERE MA.username='%s';", amount, username);
 	if (updateDB(s) != 0)
 		return 1;
 	// TODO: add to transactions

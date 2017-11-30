@@ -69,7 +69,7 @@ public class Trader extends JFrame {
 				int selected = (int)actionField.getSelectedIndex();
 				switch(selected){
 				case 0://deposit
-					int d_value = Integer.parseInt(actionText.getText());
+					double d_value = Double.parseDouble(actionText.getText());
 					DB.updateMA(current_user, d_value);
 					break;
 				case 1://withdraw
