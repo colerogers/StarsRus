@@ -104,6 +104,21 @@ public class DatabaseManager {
 	return true;
     }
 
+    public boolean isManager(String username){
+	String check = String.format("SELECT U.manager FROM Users U WHERE U.c_username='%s';", username);
+	resultSet = queryDB(check);
+	try{
+	    int man=0;
+	    if (resultSet.next())
+		man = resultSet.getInt("manager");
+	    else
+		return false;
+	    if (man == 0)
+		return false;
+	}catch (Exception e){ return false; }
+	return true;
+    }
+
     public int addMarketAccount(int m_id, String c_username, double balance){
 	if (!userExists(c_username)){
 	    System.out.println("username does not exist");
@@ -167,15 +182,26 @@ public class DatabaseManager {
 		return 1;
 	    }
 	}catch (Exception e){ return 1; }
-	s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%f WHERE SA.c_username='%s';", shares, c_username);
+	s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%.2f WHERE SA.c_username='%s';", shares, c_username);
 	
 	return updateDB(s);
     }   
 
-    /*
     public double getBalance(String username){
+	if (!userExists(username)){
+	    return -1;
+	}
+	String s = String.format("SELECT MA.balance FROM MarketAccount MA WHERE MA.c_username='%s';", username);
+	resultSet = queryDB(s);
+	try{
+	    if (!resultSet.next())
+		return -1;
+	    return resultSet.getDouble("balance");
+	}catch (Exception e){
+	    return -1;
+	}
     }
-    
+    /*
     }
     public ResultSet history(String query) {
 	return resultSet;
