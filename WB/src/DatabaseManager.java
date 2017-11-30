@@ -165,7 +165,7 @@ public class DatabaseManager {
 	}catch (Exception e){ return 1; }
 	// get current balance and check if the amount will take the account below zero
 	if (getBalance(username) + amount < 0){
-		System.out.println("MA Balance will go under 0")
+		System.out.println("MA Balance will go under 0");
 		return 1;
 	}
 
