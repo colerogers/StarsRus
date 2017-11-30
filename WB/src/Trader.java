@@ -109,25 +109,29 @@ public class Trader extends JFrame {
 				case 2://buy
 					double b_shares = Double.parseDouble(actionText.getText());
 					String b_stock = stockField.getText();
-					double b_stock_price = 1; // TODO: get cur price
-					if (DB.updateSA(current_user, b_shares, b_stock_price, b_stock) == 0){
-						JOptionPane.showMessageDialog(null, "Successfully bought shares");
-					}else{
-						JOptionPane.showMessageDialog(null, "Error occured");
-					}
+					double b_stock_price = DB.getCurrentStockPrice(b_stock); // TODO: get cur price
+					if (b_stock_price >= 0){
+						if (DB.updateSA(current_user, b_shares, b_stock_price, b_stock) == 0){
+							JOptionPane.showMessageDialog(null, "Successfully bought shares");
+						}else{
+							JOptionPane.showMessageDialog(null, "Error occured");
+						}
+					}else 
+						JOptionPane.showMessageDialog(null, "Error getting stock price");
 					break;
 				case 3://sell
 					int s_shares = Integer.parseInt(actionText.getText()) * (-1);
 					String s_stock = stockField.getText();
 					double s_stock_price = DB.getCurrentStockPrice(s_stock); //HERE fix stock price
-					JOptionPane.showMessageDialog(null, s_stock_price);
-					System.exit(1);
-					if(DB.updateSA(current_user, s_shares, s_stock_price, s_stock) == 0){
-						JOptionPane.showMessageDialog(null, "Successfully sold shares");
-					}
-					else{
-						JOptionPane.showMessageDialog(null, "Error occured");
-					}
+					if (s_stock_price >= 0){
+						if(DB.updateSA(current_user, s_shares, s_stock_price, s_stock) == 0){
+							JOptionPane.showMessageDialog(null, "Successfully sold shares");
+						}
+						else{
+							JOptionPane.showMessageDialog(null, "Error occured");
+						}
+					}else 
+						JOptionPane.showMessageDialog(null, "Error getting stock price");
 					break;
 				case 4://show balance
 					double balance = DB.getBalance(current_user);
