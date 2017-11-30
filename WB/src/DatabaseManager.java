@@ -501,8 +501,7 @@ public class DatabaseManager {
 		ArrayList<String> list = new ArrayList<String>();
 		String query = "SELECT MA.*, SA.* "
 					+ "FROM MarketAccounts MA "
-					+ "FULL OUTER JOIN StockAccount SA ON SA.c_username = MA.c_username"
-					+ "GROUP BY MA.c_username";
+					+ "LEFT JOIN StockAccount SA ON SA.c_username = MA.c_username";
 		resultSet = queryDB(query);
 		String username, stock_symbol;
 		double balance, shares, stock_price;
