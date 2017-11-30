@@ -119,7 +119,9 @@ public class Trader extends JFrame {
 				case 3://sell
 					int s_shares = Integer.parseInt(actionText.getText()) * (-1);
 					String s_stock = stockField.getText();
-					double s_stock_price = 1; //HERE fix stock price
+					double s_stock_price = DB.getCurrentStockPrice(s_stock); //HERE fix stock price
+					JOptionPane.showMessageDialog(null, s_stock_price);
+					System.exit(1);
 					if(DB.updateSA(current_user, s_shares, s_stock_price, s_stock) == 0){
 						JOptionPane.showMessageDialog(null, "Successfully sold shares");
 					}

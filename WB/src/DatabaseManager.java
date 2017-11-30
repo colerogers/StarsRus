@@ -322,6 +322,22 @@ public class DatabaseManager {
 		}
 	}
 	
+	// -1 is the error value
+	public double getCurrentStockPrice(String stock_symbol){
+		if (stockExists(stock_symbol) != 0){
+			p("stock doesn't exist in getCurrentStockPrice()");
+			return -1;
+		}
+		String s = String.format("SELECT S.current_price FROM Stocks S WHERE S.stock_symbol='%s';", stock_symbol);
+		resultSet = queryDB(s);
+		try{
+			if (resultSet.next()){
+				return resultSet.getDouble("current_price");
+			}
+		}catch (Exception e){ p("exception in getCurrentStockPrice"); }
+		return -1;
+	}
+
 	public int getMovieId(String movie){
 		String s = String.format("SELECT M.* FROM moviesDB.Movies M WHERE M.title = '%s'", movie);
 		resultSet = queryDB(s);
