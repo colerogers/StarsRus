@@ -1,5 +1,6 @@
 import java.lang.*;
 import java.sql.*;
+import java.util.*;
 
 public class DatabaseManager {
     final String HOST = "jdbc:mysql://cs174a.engr.ucsb.edu:3306/ckoziolDB";
@@ -200,7 +201,7 @@ public class DatabaseManager {
 	if (updateDB(s) != 0)
 		return 1;
 	// TODO: add to transactions
-	return 1;
+	return addTransaction("", 0, 0, amount, 0, "1", username);
     }
     
     public int updateSA(String c_username, double shares, double stock_price, String stock_symbol){
@@ -221,8 +222,7 @@ public class DatabaseManager {
 	if (updateDB(s) != 0)
 		return 1;
 
-	// TODO: add to transactions
-	return 1;
+	return addTransaction(stock_symbol, 0, stock_price, 0, shares, "1", c_username);
     }   
 	// -1 is the error value
     public double getBalance(String username){
@@ -352,9 +352,50 @@ public class DatabaseManager {
 		}
 		return movie_info;
 	}
-	
-	public double addTransaction(int t_id, String t_date, double deposit_amount, double withdraw_amount, double buy_amount, double sell_amount, String stock_symbol, double intrest_accrued, double stock_price){
-		return 0;
+
+	public int addTransaction(String stock_symbol, double intrest_accrued, double stock_price, double market_account_amount, double stock_account_amount, String t_date, String username){
+		t_date = "1";
+		String s;
+		if (intrest_accrued != 0){
+			// intrest transaction
+			s = String.format("INSERT INTO Transactions (t_date, intrest_accrued, c_username) VALUES ('%s', %f, '%s';", t_date, intrest_accrued, username);
+			return updateDB(s);
+		} else if (market_account_amount != 0){
+			// market account transaction
+			s = String.format("INSERT INTO Transactions (t_date, market_account_amount, c_username) VALUES ('%s', %f, '%s');", t_date, market_account_amount, username);
+			return updateDB(s);
+		} else if (stock_account_amount != 0){
+			// stock account transaction
+			s = String.format("INSERT INTO Transactions (t_date, stock_symbol, stock_price, stock_account_amount, c_username) VALUES ('%s', '%s', %f, %f, '%s');", t_date, stock_symbol, stock_price, stock_account_amount, username);
+			return updateDB(s);
+		}else{
+			p("bad transaction type");
+			return 1;
+		}
+	}
+
+	public String[] getTransactionHistory(String username){
+		ArrayList<String> list = new ArrayList<String>();
+		if (!userExists(username)){ p("user doesn't exist"); return list.stream().toArray(String[]::new); }
+		String query = String.format("SELECT * FROM Transactions T WHERE T.c_username='%s'", username);
+		resultSet = queryDB(query);
+		try {
+			String s, date, stock_sym;
+			double intrest, stock_price, market_amt, stock_amt;
+			while (resultSet.next()){
+				date = resultSet.getString("t_date");
+				stock_sym = resultSet.getString("stock_symbol");
+				intrest = resultSet.getDouble("intrest_accrued");
+				stock_price = resultSet.getDouble("stock_price");
+				market_amt = resultSet.getDouble("market_account_amount");
+				stock_amt = resultSet.getDouble("stock_account_amount");
+				list.add(""+date+stock_sym+intrest+stock_price+market_amt+stock_amt+username);
+			}
+		}catch (Exception e){
+			p("resultSet access in transaction history");
+		}
+
+		return list.stream().toArray(String[]::new);
 	}
 
     /*

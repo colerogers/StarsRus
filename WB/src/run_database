@@ -4,10 +4,24 @@ if [ ! -f "DatabaseManager.java" ]; then
     echo "Error: cannot find the java class"
     exit 1
 fi
-
-if [ ! -f "DatabaseManager" ]; then
-    echo "Compiling java file"
-   javac DatabaseManager.java
+if [ ! -f "Login.java" ]; then
+    echo "Error: cannot find the java class"
+    exit 1
 fi
+if [ ! -f "Manager.java" ]; then
+    echo "Error: cannot find the java class"
+    exit 1
+fi
+if [ ! -f "Trader.java" ]; then
+    echo "Error: cannot find the java class"
+    exit 1
+fi
+
+echo "Compiling..."
+
+javac Login.java
+javac Manager.java
+javac Register.java
+javac Trader.java 
 
 java -cp /cs/class/cs174a/public/mysql-connector-java-5.1.44-bin.jar:. Login
