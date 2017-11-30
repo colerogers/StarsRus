@@ -71,10 +71,14 @@ public class Trader extends JFrame {
 				case 0://deposit
 					double d_value = Double.parseDouble(actionText.getText());
 					DB.updateMA(current_user, d_value);
+					double d_balance = DB.getBalance(current_user);
+					JOptionPane.showMessageDialog(null, "Deposit complete, new balance: " + Double.toString(d_balance));
 					break;
 				case 1://withdraw
 					int w_value = -1*Integer.parseInt(actionText.getText());
 					DB.updateMA(current_user, w_value);
+					double w_balance = DB.getBalance(current_user);
+					JOptionPane.showMessageDialog(null, "Withdraw complete, new balance: " + Double.toString(w_balance));
 					break;
 				case 2://buy
 					int b_shares = Integer.parseInt(actionText.getText());
@@ -105,7 +109,8 @@ public class Trader extends JFrame {
 				}
 				
 				
-				
+				actionText.setText("");
+				stockField.setText("");
 //				getContentPane().removeAll();
 //				getContentPane().revalidate();
 //				getContentPane().repaint();
