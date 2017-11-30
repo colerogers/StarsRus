@@ -199,7 +199,7 @@ public class DatabaseManager {
 	if (updateDB(s) != 0)
 		return 1;
 	// TODO: add to transactions
-	return 1;
+	return addTransaction("", 0, 0, amount, 0, "1", username);
     }
     
     public int updateSA(String c_username, double shares, double stock_price, String stock_symbol){
@@ -220,8 +220,7 @@ public class DatabaseManager {
 	if (updateDB(s) != 0)
 		return 1;
 
-	// TODO: add to transactions
-	return 1;
+	return addTransaction(stock_symbol, 0, stock_price, 0, shares, "1", c_username);
     }   
 	// -1 is the error value
     public double getBalance(String username){
@@ -253,8 +252,25 @@ public class DatabaseManager {
 		}
 	}
 	
-	public double addTransaction(int t_id, String t_date, double deposit_amount, double withdraw_amount, double buy_amount, double sell_amount, String stock_symbol, double intrest_accrued, double stock_price){
-		return 0;
+	public int addTransaction(String stock_symbol, double intrest_accrued, double stock_price, double market_account_amount, double stock_account_amount, String t_date, String username){
+		t_date = "1";
+		String s;
+		if (intrest_accrued != 0){
+			// intrest transaction
+			s = String.format("INSERT INTO Transactions (t_date, intrest_accrued, c_username) VALUES ('%s', %f, '%s';", t_date, intrest_accrued, username);
+			return updateDB(s);
+		} else if (market_account_amount != 0){
+			// market account transaction
+			s = String.format("INSERT INTO Transactions (t_date, market_account_amount, c_username) VALUES ('%s', %f, '%s');", t_date, market_account_amount, username);
+			return updateDB(s);
+		} else if (stock_account_amount != 0){
+			// stock account transaction
+			s = String.format("INSERT INTO Transactions (t_date, stock_symbol, stock_price, stock_account_amount, c_username) VALUES ('%s', '%s', %f, %f, '%s');", t_date, stock_symbol, stock_price, stock_account_amount, username);
+			return updateDB(s);
+		}else{
+			p("bad transaction type");
+			return 1;
+		}
 	}
 
     /*
