@@ -149,7 +149,7 @@ public class DatabaseManager {
 			return 1;
 		}
 
-		String s = String.format("INSERT INTO StockAccount (c_username, shares, stock_price, stock_symbol) VALUES ('%s', %f, %f, '%s');", c_username, shares, stock_price, stock_symbol);
+		String s = String.format("INSERT INTO StockAccount (stock_symbol, c_username, shares, stock_price) VALUES ('%s', '%s', %f, %f);", stock_symbol, c_username, shares, stock_price);
 		// add the SA to the DB
 		return updateDB(s);
 	}
@@ -259,7 +259,7 @@ public class DatabaseManager {
 			p("error withdrawing market account in updateSA");
 			return 1;
 		}
-		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%.2f WHERE SA.c_username='%s';", shares, c_username);
+		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%f WHERE SA.c_username='%s' AND SA.stock_symbol='%s';", shares, c_username, stock_symbol);
 		if (updateDB(s) != 0){
 			p("could not update the account");
 			return 1;
@@ -280,7 +280,7 @@ public class DatabaseManager {
 			p("error depositing market account");
 			return 1;
 		}
-		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%.2f WHERE SA.c_username='%s';", shares, c_username);
+		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%f WHERE SA.c_username='%s' AND SA.stock_symbol='%s';", shares, c_username, stock_symbol);
 		if (updateDB(s) != 0){
 			p("could not update the account");
 			return 1;
