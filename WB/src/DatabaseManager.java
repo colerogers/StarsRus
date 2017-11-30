@@ -44,7 +44,12 @@ public class DatabaseManager {
 		
 	    //statement.close();
 	}
-    }
+	}
+	
+	// helper print method
+	public void p(String s){
+		System.out.println("ERROR: "+s);
+	}
 
     /*
       Use when we want something in return
@@ -125,10 +130,30 @@ public class DatabaseManager {
 	    System.out.println("username does not exist");
 	    return 1;
 	}
+
 	String s = String.format("INSERT INTO MarketAccounts (c_username, balance) VALUES ('%s', %f);", c_username, 1000.0);
+
 	// add the MA to the DB
 	return updateDB(s);
-    }
+	}
+	
+	public int addStockAccount(String c_username, double shares, double stock_price, String stock_symbol){
+		if (shares < 0){ p("shares below 0"); return 1; }
+		if (stock_symbol.length() != 3){ p("stock_symbol not length 3"); return 1; }
+		if (!userExists(c_username)){ p("user doesn't exist"); return 1; }
+		// check account already exists
+		String s = String.format("SELECT SA.c_username FROM StockAccount SA WHERE SA.c_username='%s' AND SA.stock_symbol='%s';", c_username, stock_symbol);
+		resultSet = queryDB(s);
+		try{
+			if (resultSet.next()){
+				return 1;
+			}
+		}catch (Exception e){}
+
+		s = String.format("INSERT INTO StockAccount (c_username, shares, stock_price, stock_symbol) VALUES (%s, %f, %f, %s);", c_username, shares, stock_price, stock_symbol);
+		// add the MA to the DB
+		return updateDB(s);
+	}
 
     public int addUser(String name, String state, String pNumber, String email, String taxId, String address, String username, int manager, String password){
 	if (state.length() != 2){
@@ -171,8 +196,10 @@ public class DatabaseManager {
 	}
 
 	s = String.format("UPDATE MarketAccount MA SET MA.amount=MA.amount+%.2f WHERE MA.username='%s';", amount, username);
-
-	return updateDB(s);
+	if (updateDB(s) != 0)
+		return 1;
+	// TODO: add to transactions
+	return 1;
     }
     
     public int updateSA(String c_username, double shares, double stock_price, String stock_symbol){
@@ -180,19 +207,21 @@ public class DatabaseManager {
 	    System.out.println("username does not exist");
 	    return 1;
 	}
-	String s = String.format("SELECT SA.c_username FROM StockAccount SA WHERE SA.c_username='%s';", c_username);
-	resultSet = queryDB(s);
-	try{
-	    if (!resultSet.next()){
-		System.out.println("Stock Account does not exist");
+	// try to add account, if 0 then created account, if 1 already exists
+	int code = addStockAccount(c_username, shares, stock_price, stock_symbol);
+
+	if (getShares(c_username, stock_symbol) + shares < 0){
+		System.out.println("SA shares will go under 0");
 		return 1;
-	    }
-	}catch (Exception e){ return 1; }
+	}
 
-
-	s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%.2f WHERE SA.c_username='%s';", shares, c_username);
+	String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%.2f WHERE SA.c_username='%s';", shares, c_username);
 	
-	return updateDB(s);
+	if (updateDB(s) != 0)
+		return 1;
+
+	// TODO: add to transactions
+	return 1;
     }   
 	// -1 is the error value
     public double getBalance(String username){
@@ -210,18 +239,17 @@ public class DatabaseManager {
 	}
 	}
 	// -1 is the error value;
-	public double getShares(String username){
-		if (!userExists(username)){
-			return -1;
-		}
-		String s = String.format("SELECT SA.shares FROM StockAccount SA WHERE SA.c_username='%s'", username);
+	public double getShares(String username, String stock_symbol){
+		if (!userExists(username)){ p("user not found"); return -1; }
+
+		String s = String.format("SELECT SA.shares FROM StockAccount SA WHERE SA.c_username='%s' AND SA.stock_symbol='%s'", username, stock_symbol);
 		resultSet = queryDB(s);
 		try{
 			if (!resultSet.next())
-				return -1;
+				return 0;
 			return resultSet.getDouble("shares");
 		}catch (Exception e){
-			return -1;
+			return 0;
 		}
 	}
     /*
