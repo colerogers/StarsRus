@@ -1,5 +1,6 @@
 import java.lang.*;
 import java.sql.*;
+import java.util.*;
 
 public class DatabaseManager {
     final String HOST = "jdbc:mysql://cs174a.engr.ucsb.edu:3306/ckoziolDB";
@@ -272,6 +273,30 @@ public class DatabaseManager {
 			p("bad transaction type");
 			return 1;
 		}
+	}
+
+	public String[] getTransactionHistory(String username){
+		ArrayList<String> list = new ArrayList<String>();
+		if (!userExists(username)){ p("user doesn't exist"); return list.stream().toArray(String[]::new); }
+		String query = String.format("SELECT * FROM Transactions T WHERE T.c_username='%s'", username);
+		resultSet = queryDB(query);
+		try {
+			String s, date, stock_sym;
+			double intrest, stock_price, market_amt, stock_amt;
+			while (resultSet.next()){
+				date = resultSet.getString("t_date");
+				stock_sym = resultSet.getString("stock_symbol");
+				intrest = resultSet.getDouble("intrest_accrued");
+				stock_price = resultSet.getDouble("stock_price");
+				market_amt = resultSet.getDouble("market_account_amount");
+				stock_amt = resultSet.getDouble("stock_account_amount");
+				list.add(""+date+stock_sym+intrest+stock_price+market_amt+stock_amt+username);
+			}
+		}catch (Exception e){
+			p("resultSet access in transaction history");
+		}
+
+		return list.stream().toArray(String[]::new);
 	}
 
     /*
