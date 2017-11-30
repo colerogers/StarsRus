@@ -75,8 +75,13 @@ public class Manager extends JFrame {
 				case 3://DTER
 					break;
 				case 4://customer report
+					JOptionPane.showMessageDialog(null, DB.customerReport());
 					break;
-				case 5://delete transaction
+				case 5://delete transactions
+					if(1 == DB.deleteTransactions()){
+						JOptionPane.showMessageDialog(null, "Error deleting Transactions");
+					}
+					JOptionPane.showMessageDialog(null, "Transactions for this month deleted");
 					break;
 				}
 

@@ -462,8 +462,17 @@ public class DatabaseManager {
 	}
 
 	public int deleteTransactions(){
-
-		return 0;
+		String s = "DELETE FROM Transactions";
+		int i = 1;
+		try{
+		    i = statement.executeUpdate(s);
+		}catch (Exception e){
+		    System.out.println("executeQuery() failed");
+		    System.out.println(s);
+//		    System.exit(1);
+		    return 1;
+		}
+		return i;
 	}
 	
 	public String[] generateGovernementReport(){
@@ -472,10 +481,38 @@ public class DatabaseManager {
 		return list.stream().toArray(String[]::new);
 	}
 
-	public String[] customerReport(){
+	public String customerReport(){
 		ArrayList<String> list = new ArrayList<String>();
+		String query = "SELECT MA.*, SA.* "
+					+ "FROM MarketAccounts MA "
+					+ "FULL OUTER JOIN StockAccount SA ON SA.c_username = MA.c_username"
+					+ "GROUP BY MA.c_username";
+		resultSet = queryDB(query);
+		String username, stock_symbol;
+		double balance, shares, stock_price;
+		try{
+			while (resultSet.next()){
+				username = resultSet.getString("c_username");
+				stock_symbol = resultSet.getString("stock_symbol");
+				shares = resultSet.getDouble("shares");
+				balance = resultSet.getDouble("balance");
+				stock_price = resultSet.getDouble("stock_price");
+				
+				String temp_s = "\n" + username + ": ";
+				temp_s += "Market Account Balance: " + balance;
+				//TODO add stock stuff
+				list.add(temp_s);
+			}
+		}catch (Exception e){
+			p("customerReport error");
+		}
 		
-		return list.stream().toArray(String[]::new);
+//		return list.stream().toArray(String[]::new);
+		String s = "";
+		for(int i = 0; i < list.size(); i++){
+			s += list.get(i);
+		}
+		return s;
 	}
 
     
