@@ -286,7 +286,6 @@ public class DatabaseManager {
 		try{
 			ResultSetMetaData rsmd = resultSet.getMetaData();
 			int columnsNumber = rsmd.getColumnCount();
-			reviews = "Reviews for - " + movie + ":\n"; 
 			while (resultSet.next()) {
 			    for (int i = 1; i <= columnsNumber; i++) {
 			    	if(rsmd.getColumnName(i).equals("author")){
@@ -297,7 +296,10 @@ public class DatabaseManager {
 			    	}
 			    }
 			}
-			return reviews;
+			if(reviews.length() == 0){
+				return "No reviews found for this movie";
+			}
+			return "Reviews for - " + movie + ":\n" + reviews;
 		}catch(Exception e){
 			//do nothing rn
 		}
@@ -317,7 +319,6 @@ public class DatabaseManager {
 		try{
 			ResultSetMetaData rsmd = resultSet.getMetaData();
 			int columnsNumber = rsmd.getColumnCount();
-			top_movies = String.format("Top Movies from %d - %d:\n", year1, year2); 
 			while (resultSet.next()) {
 			    for (int i = 1; i <= columnsNumber; i++) {
 			    	if(rsmd.getColumnName(i).equals("title")){
@@ -325,8 +326,11 @@ public class DatabaseManager {
 			    	}
 			    }
 			}
-			return top_movies;
-		}catch(Exception e){
+			if(top_movies.length() == 0){
+				return "No movies match this criteria";
+			}
+			return String.format("Top Movies from %d - %d:\n", year1, year2) + top_movies;
+		} catch(Exception e){
 			//do nothing rn
 		}
 		return "No movies match this criteria";
@@ -349,6 +353,9 @@ public class DatabaseManager {
 			}
 		}catch(Exception e){
 			//do nothing rn
+		}
+		if(movie_info.length() == 0){
+			return "No movie with that title found";
 		}
 		return movie_info;
 	}
@@ -374,37 +381,64 @@ public class DatabaseManager {
 		}
 	}
 
-	public String[] getTransactionHistory(String username){
+	public String getTransactionHistory(String username){
 		ArrayList<String> list = new ArrayList<String>();
-		if (!userExists(username)){ p("user doesn't exist"); return list.stream().toArray(String[]::new); }
+//		if (!userExists(username)){ p("user doesn't exist"); return list.stream().toArray(String[]::new); }
+		if (!userExists(username)){ p("user doesn't exist"); return "User does not exist"; }
 		String query = String.format("SELECT * FROM Transactions T WHERE T.c_username='%s'", username);
 		resultSet = queryDB(query);
 		try {
 			String s, date, stock_sym;
-			double intrest, stock_price, market_amt, stock_amt;
+			double interest, stock_price, market_amt, stock_amt;
 			while (resultSet.next()){
-				date = resultSet.getString("t_date");
+//				date = resultSet.getString("t_date");
 				stock_sym = resultSet.getString("stock_symbol");
-				intrest = resultSet.getDouble("intrest_accrued");
+				interest = resultSet.getDouble("interest_accrued");
 				stock_price = resultSet.getDouble("stock_price");
 				market_amt = resultSet.getDouble("market_account_amount");
 				stock_amt = resultSet.getDouble("stock_account_amount");
-				list.add(""+date+stock_sym+intrest+stock_price+market_amt+stock_amt+username);
+				String temp_s = "";
+				if(stock_sym != null){
+					temp_s += "Stock Sym: " + stock_sym + " ";
+				}
+				if(interest != 0){
+					temp_s += "Interest: " + interest + " ";
+				}
+				if(stock_price != 0){
+					temp_s += "Stock Price: " + stock_price + " ";
+				}
+				if(stock_amt != 0){
+					temp_s += "Stock Amount: " + stock_amt + " ";
+				}
+				if(market_amt != 0){
+					temp_s += "Market Amount: " + market_amt + " ";
+				}
+				list.add(temp_s);
+//				list.add(""+date+stock_sym+interest+stock_price+market_amt+stock_amt+username);
 			}
 		}catch (Exception e){
+			p(e.toString());
 			p("resultSet access in transaction history");
 		}
 
-		return list.stream().toArray(String[]::new);
+//		return list.stream().toArray(String[]::new);
+		String s = "";
+		for(int i = 0; i < list.size(); i++){
+			s += list.get(i) + "\n";
+		}
+		if(s.length() == 0){
+			return "No transactions found for this user";
+		}
+		return s;
 	}
 
-	public String[] listActiveCustomers(){
+	public String listActiveCustomers(){
 		ArrayList<String> list = new ArrayList<String>();
 
 		String query = "SELECT Temp.c_username "
-					  +"FROM { SELECT COUNT(T.stock_account_amount) AS shares, T.c_username "
+					  +"FROM ( SELECT COUNT(T.stock_account_amount) AS shares, T.c_username "
 							   +"FROM Transactions T "
-							   +"GROUP BY T.c_username } AS Temp "
+							   +"GROUP BY T.c_username ) AS Temp "
 					  +"WHERE Temp.shares >= 1000";
 		resultSet = queryDB(query);
 		try{
@@ -415,7 +449,16 @@ public class DatabaseManager {
 			p("resultSet access in list active customers");
 		}
 
-		return list.stream().toArray(String[]::new);
+//		return list.stream().toArray(String[]::new);
+		String s = "";
+		for(int i  = 0; i < list.size(); i++){
+			s += list.get(i);
+		}
+		if(s.length() == 0){
+			return "No customers trader more than 1000 shares this month";
+		}
+		return s;
+		
 	}
 
 	public int deleteTransactions(){

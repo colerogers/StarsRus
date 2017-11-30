@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -134,7 +135,17 @@ public class Register extends JFrame {
 				String name     = nameField.getText();
 				String state    = stateField.getText();
 				
-				if(DB.addUser(name, state, phone, email, tax, address, username, 0, password) == 0){
+				if(state.length() != 2){
+					JOptionPane.showMessageDialog(null, "State must be 2 Characters");
+				}
+				else if(phone.length() != 10){
+					JOptionPane.showMessageDialog(null, "Phone number must be 10 digits");
+				}
+				else if(username.length() < 1 || password.length() < 1){
+					JOptionPane.showMessageDialog(null, "must enter valid username and password");
+				}
+				
+				else if(DB.addUser(name, state, phone, email, tax, address, username, 0, password) == 0){
 					DB.addMarketAccount(username);
 					try {
 						Login frame = new Login();
@@ -143,6 +154,9 @@ public class Register extends JFrame {
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
+				}
+				else{
+					JOptionPane.showMessageDialog(null, "Error registering user (user may already exist)");
 				}
 			}
 		});

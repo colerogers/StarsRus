@@ -69,16 +69,24 @@ public class Trader extends JFrame {
 				int selected = (int)actionField.getSelectedIndex();
 				switch(selected){
 				case 0://deposit
-					double d_value = Double.parseDouble(actionText.getText());
-					DB.updateMA(current_user, d_value);
-					double d_balance = DB.getBalance(current_user);
-					JOptionPane.showMessageDialog(null, "Deposit complete, new balance: " + Double.toString(d_balance));
+					try{
+						double d_value = Double.parseDouble(actionText.getText());
+						DB.updateMA(current_user, d_value);
+						double d_balance = DB.getBalance(current_user);
+						JOptionPane.showMessageDialog(null, "Deposit complete, new balance: " + Double.toString(d_balance));
+					} catch(NumberFormatException en){
+						JOptionPane.showMessageDialog(null, "Please enter a valid amount");
+					}
 					break;
 				case 1://withdraw
-					int w_value = -1*Integer.parseInt(actionText.getText());
-					DB.updateMA(current_user, w_value);
-					double w_balance = DB.getBalance(current_user);
-					JOptionPane.showMessageDialog(null, "Withdraw complete, new balance: " + Double.toString(w_balance));
+					try{
+						int w_value = -1*Integer.parseInt(actionText.getText());
+						DB.updateMA(current_user, w_value);
+						double w_balance = DB.getBalance(current_user);
+						JOptionPane.showMessageDialog(null, "Withdraw complete, new balance: " + Double.toString(w_balance));
+					} catch(NumberFormatException en){
+						JOptionPane.showMessageDialog(null, "Please enter a valid amount");
+					}
 					break;
 				case 2://buy
 					int b_shares = Integer.parseInt(actionText.getText());
@@ -97,6 +105,7 @@ public class Trader extends JFrame {
 					JOptionPane.showMessageDialog(null, "You account balance is: " + Double.toString(balance));
 					break;
 				case 5://transaction history
+					JOptionPane.showMessageDialog(null, DB.getTransactionHistory(current_user));
 					break;
 				case 6://check stock/actor
 					break;
@@ -105,11 +114,15 @@ public class Trader extends JFrame {
 					JOptionPane.showMessageDialog(null, DB.getMovie(movie));
 					break;
 				case 8://top movies in x years
-					String t_movie = actionText.getText();
-					String[] temp_years = t_movie.split("-");
-					int year1 = Integer.parseInt(temp_years[0]);
-					int year2 = Integer.parseInt(temp_years[1]);
-					JOptionPane.showMessageDialog(null, DB.getTopMovies(year1, year2));
+					try{
+						String t_movie = actionText.getText();
+						String[] temp_years = t_movie.split("-");
+						int year1 = Integer.parseInt(temp_years[0]);
+						int year2 = Integer.parseInt(temp_years[1]);
+						JOptionPane.showMessageDialog(null, DB.getTopMovies(year1, year2));
+					} catch(NumberFormatException en){
+						JOptionPane.showMessageDialog(null, "Please enter valid dates in form YYYY-YYYY");
+					}
 					break;
 				case 9://reviews for x movie
 					String r_movie = actionText.getText();
