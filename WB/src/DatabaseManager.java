@@ -149,7 +149,7 @@ public class DatabaseManager {
 			return 1;
 		}
 
-		String s = String.format("INSERT INTO StockAccount (c_username, shares, stock_price, stock_symbol) VALUES (%s, %f, %f, %s);", c_username, shares, stock_price, stock_symbol);
+		String s = String.format("INSERT INTO StockAccount (c_username, shares, stock_price, stock_symbol) VALUES ('%s', %f, %f, '%s');", c_username, shares, stock_price, stock_symbol);
 		// add the SA to the DB
 		return updateDB(s);
 	}
@@ -174,7 +174,7 @@ public class DatabaseManager {
 
 	// return 0 if true, 1 if false
 	public int stockExists(String stock_symbol){
-		String s = String.format("SELECT S.stock_symbol FROM Stocks S WHERE s.stock_symbol='%s'", stock_symbol);
+		String s = String.format("SELECT S.stock_symbol FROM Stocks S WHERE S.stock_symbol='%s'", stock_symbol);
 		resultSet = queryDB(s);
 		try{
 			if (!resultSet.next()){
