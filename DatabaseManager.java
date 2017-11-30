@@ -63,14 +63,16 @@ public class DatabaseManager {
       Use when we dont need anything back
       ex~ INSERT
      */
-    public void updateDB(String update){
+    public int updateDB(String update){
 	try{
 	    statement.executeUpdate(update);
 	}catch (Exception e){
 	    System.out.println("Error updating, using :");
 	    System.out.println(update);
-	    System.exit(1);
+	    System.out.println();
+	    return 1;
 	}
+	return 0;
     }
 
     public boolean userExists(String username){
@@ -82,53 +84,71 @@ public class DatabaseManager {
 	return true;
     }
 
-    public void addMarketAccount(int m_id, String c_username, double balance){
-	String s = String.format("INSERT INTO MarketAccount (m_id, c_username, balance) WHERE (%d, %s, %f);", m_id, c_username, balance);
-	if (userExists(c_username)){
-
-	}else{
+    public int addMarketAccount(int m_id, String c_username, double balance){
+	if (!userExists(c_username)){
 	    System.out.println("username does not exist");
-	    System.exit(1);
+	    return 1;
 	}
+	String s = String.format("INSERT INTO MarketAccount (m_id, c_username, balance) WHERE (%d, %s, %f);", m_id, c_username, balance);
+	// add the MA to the DB
+	updateDB(s);
+	return 0;
     }
 
-    public void addUser(String name, String state, String pNumber, String email, String taxId, String address, String username, int manager, String password){
-	if (state.length() != 2)
+    public int addUser(String name, String state, String pNumber, String email, String taxId, String address, String username, int manager, String password){
+	if (state.length() != 2){
 	    System.out.println("State must be 2 letters");
-	if (pNumber.length() != 10)
+	    return 1;
+	}
+	if (pNumber.length() != 10){
 	    System.out.println("Phone number must be 10 digits");
+	    return 1;
+	}
 	// TODO: check if username is in db already and throw error
 
 	String s = String.format("INSERT INTO Users (c_username, name, state, phone, email, tax_id, address, manager, password) VALUES ('%s', '%s','%s','%s','%s','%s','%s', %d, '%s')",username,name,state, pNumber,email, taxId, address, manager, password);
 
 	updateDB(s);
+	return 0;
     }
 
     /*
       market:0->stockAcct, 1->marketAcct
     */
-    public void deposit(int m_id, String username, double amount) {
+    public int updateMA(int m_id, String username, double amount) {
 	// check if user exists
-	String check = String.format("SELECT name FROM Users U WHERE U.c_username='%s';", username);
-	resultSet = queryDB(check);
-	if (!resultSet.next()){
-	    // Need to create user
+	if (!userExists(username)){
 	    System.out.println("username does not exist");
-	    System.exit(1);
+	    return 1;
 	}
-	check = String.format("SELECT MA.m_id FROM MarketAccount MA WHERE MA.m_id=%d", m_id);
-	resultSet = queryDB(check);
+	String s = String.format("SELECT MA.username FROM MarketAccount MA WHERE MA.username='%s';", username);
+	resultSet = queryDB(s);
 	if (!resultSet.next()){
 	    // create market account for user and add $1000
-	    
+	    System.out.println("Market Account does not exist");
+	    return 1;
 	}
-	//String s = String.format()
-	
-	
+	s = String.Format("UPDATE MarketAccount MA SET MA.amount=%d WHERE MA.username='%s';", amount, username);
+
+	updateDB(s);
+	return 0;
     }
-    public ResultSet withdraw(String query) {
-	return resultSet;
+    public int updateSA(int s_id, String, String c_username, double shares, double stock_price, String stock_symbol){
+	if (!userExists(c_username)){
+	    System.out.println("username does not exist");
+	    return 1;
+	}
+	String s = String.format("SELECT SA.c_username FROM StockAccount SA WHERE SA.c_username='%s';", c_username);
+	resultSet = queryDB(s);
+	if (!resultSet.next()){
+	    System.out.println("Stock Account does not exist");
+	    return 1;
+	}
+
+	updateDB(s);
+	return 0;
     }
+   
     public ResultSet buy(String query) {
 	return resultSet;
     }
