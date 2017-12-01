@@ -222,7 +222,6 @@ public class Trader extends JFrame {
 					break;
 				case 17:
 					market_open = 0;
-					DB.endOfDay();
 					JOptionPane.showMessageDialog(null, "Market Closed");
 					break;
 				case 18:

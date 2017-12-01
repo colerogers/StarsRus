@@ -418,7 +418,7 @@ public class DatabaseManager {
     
     // -1 is the error value
     public double getCurrentStockPrice(String stock_symbol){
-        if (stockExists(stock_symbol) != 0){
+		if (stockExists(stock_symbol) != 0){
             p("stock doesn't exist in getCurrentStockPrice()");
             return -1;
         }
