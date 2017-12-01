@@ -955,7 +955,7 @@ public class DatabaseManager {
             // this loop will get us to correct year
             for (int i=curYear; i<yearToSet; i++){
                 for (int j=curMonth; j<12; j++){
-                    for (int k=curDay; k<30; k++){
+                    for (int k=curDay; k<31; k++){
                         if (endOfDay() != 0) { p("setDate: endOfDay inner loop 1");}
                         //if (deleteCurrentDate() != 0) { p("year change for loop in setDate"); }
                         s = String.format("%02d",i) + "-" + String.format("%02d",j) + "-" + String.format("%02d",k+1);
@@ -974,7 +974,7 @@ public class DatabaseManager {
 		    if (deleteBalance() != 0) { p("setDate deleteBalance middle loop 1"); }
                 }
                 // i-12-1
-                for (int k=1; k<30; k++){
+                for (int k=1; k<31; k++){
                     if (endOfDay() != 0) { p("setDate: endOfDay middle loop 2 @ 833");}
                     //if (deleteCurrentDate() != 0) { p("year change for loop in setDate"); }
                     s = String.format("%02d",i) + "-" + Integer.toString(12) + "-" + String.format("%02d",k + 1);
@@ -1000,7 +1000,7 @@ public class DatabaseManager {
             // this loop will get us to first of the month
 	    for (int i=curMonth; i<monthToSet; i++){
                 // all months have 30 days?
-                for (int j=curDay; j<30; j++){
+                for (int j=curDay; j<31; j++){
                     if (endOfDay() != 0) { p("setDate @ 859");}
 		    s = Integer.toString(curYear) + "-" + String.format("%02d", i) + "-" + String.format("%02d", j+1);
 		    changeDay(s);
@@ -1047,7 +1047,7 @@ public class DatabaseManager {
             // this loop will get us to first of the month
             for (int i=curMonth; i<monthToSet; i++){
                 // all months have 30 days?
-                for (int j=curDay; j<30; j++){
+                for (int j=curDay; j<31; j++){
                     if (endOfDay() != 0) { p("month change; inner endOfDay called in setDate");}
 		    s = Integer.toString(curYear) + "-" + String.format("%02d", i) + "-" + String.format("%02d", j+1);
 		    changeDay(s);
