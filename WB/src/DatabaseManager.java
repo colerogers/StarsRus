@@ -248,6 +248,7 @@ public class DatabaseManager {
 	// TODO: add to transactions
 	return addTransaction("", 0, 0, amount, 0, "1", username);
     }
+    
 	
 	// buy and sell shares of stocks
     public int updateSA(String c_username, int shares, double stock_price, String stock_symbol){
