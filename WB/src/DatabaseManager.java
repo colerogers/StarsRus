@@ -222,31 +222,31 @@ public class DatabaseManager {
       market:0->stockAcct, 1->marketAcct
     */
     public int updateMA(String username, double amount) {
-    // check if user exists
-    if (!userExists(username)){
-        System.out.println("username does not exist");
-        return 1;
-    }
-    String s = String.format("SELECT MA.c_username FROM MarketAccounts MA WHERE MA.c_username='%s';", username);
-    resultSet = queryDB(s);
-    try{
-        if (!resultSet.next()){
-        // create market account for user and add $1000
-        System.out.println("Market Account does not exist");
-        return 1;
-        }
-    }catch (Exception e){ return 1; }
-    // get current balance and check if the amount will take the account below zero
-    if (getBalance(username) + amount < 0){
-        System.out.println("MA Balance will go under 0");
-        return 1;
-    }
+	// check if user exists
+	if (!userExists(username)){
+	    System.out.println("username does not exist");
+	    return 1;
+	}
+	String s = String.format("SELECT MA.c_username FROM MarketAccounts MA WHERE MA.c_username='%s';", username);
+	resultSet = queryDB(s);
+	try{
+	    if (!resultSet.next()){
+		// create market account for user and add $1000
+		System.out.println("Market Account does not exist");
+		return 1;
+	    }
+	}catch (Exception e){ return 1; }
+	// get current balance and check if the amount will take the account below zero
+	if (getBalance(username) + amount < 0){
+		System.out.println("MA Balance will go under 0");
+		return 1;
+	}
 
-    s = String.format("UPDATE MarketAccounts MA SET MA.balance=MA.balance+%.2f WHERE MA.c_username='%s';", amount, username);
-    if (updateDB(s) != 0)
-        return 1;
-    
-    return addTransaction("", 0, 0, amount, 0, "1", username);
+	s = String.format("UPDATE MarketAccounts MA SET MA.balance=MA.balance+%.2f WHERE MA.c_username='%s';", amount, username);
+	if (updateDB(s) != 0)
+		return 1;
+	
+	return addTransaction("", 0, 0, amount, 0, username);
     }
 
     // Use if we dont want to add to the transaction log
@@ -281,95 +281,95 @@ public class DatabaseManager {
     
     // buy and sell shares of stocks
     public int updateSA(String c_username, int shares, double stock_price, String stock_symbol){
-    if (!userExists(c_username)){
-        System.out.println("username does not exist");
-        return 1;
-    }
-    double amount = shares * getCurrentStockPrice(stock_symbol) + 20;
-    if (shares > 0){
-        // buy stock
-        if (getBalance(c_username) + amount < 0){
-            p(" balance will go under 0");
-            return 1;
-        }
-        if (hasStockAccount(c_username, stock_symbol) == 1){
-            p("customer does not have a stock account ... making one");
-            if (addStockAccount(c_username, shares, stock_price, stock_symbol) != 0){
-                p("stock account could not be created");
-                return 1;
-            }
-        }
-        if (updateMA(c_username, amount, 1) != 0){
-            p("error withdrawing market account in updateSA");
-            return 1;
-        }
+	if (!userExists(c_username)){
+	    System.out.println("username does not exist");
+	    return 1;
+	}
+	double amount = shares * getCurrentStockPrice(stock_symbol) + 20;
+	if (shares > 0){
+		// buy stock
+		if (getBalance(c_username) + amount < 0){
+			p(" balance will go under 0");
+			return 1;
+		}
+		if (hasStockAccount(c_username, stock_symbol) == 1){
+			p("customer does not have a stock account ... making one");
+			if (addStockAccount(c_username, shares, stock_price, stock_symbol) != 0){
+				p("stock account could not be created");
+				return 1;
+			}
+		}
+		if (updateMA(c_username, amount, 1) != 0){
+			p("error withdrawing market account in updateSA");
+			return 1;
+		}
 
-        //check to see if user already has stock for that price
-        String check = String.format("SELECT SA.* FROM StockAccount SA WHERE c_username='%s' AND stock_price=%.2f", c_username, stock_price);
-        resultSet = queryDB(check);
-        int already_owned = 1;
-        try{
-            if (!resultSet.next()){
-                already_owned = 0;
-            }
-        }catch (Exception e){ return 1; }
-        
-        if(already_owned == 1){
-            String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%d "
-                    + "WHERE SA.c_username='%s' AND SA.stock_symbol='%s' AND SA.stock_price=%f;", shares, c_username, stock_symbol,stock_price);
-            
-            if (updateDB(s) != 0){
-                p("could not update the account");
-                return 1;
-            }
-        }
-        else{
-            String s = String.format("INSERT INTO StockAccount (c_username, shares, stock_price, stock_symbol) "
-                    + "VALUES ('%s', %d, %f, '%s');", c_username, shares, stock_price, stock_symbol);
-            
-            if (updateDB(s) != 0){
-                p("could not update the account");
-                return 1;
-            }
-        }
+		//check to see if user already has stock for that price
+		String check = String.format("SELECT SA.* FROM StockAccount SA WHERE c_username='%s' AND stock_price=%.2f", c_username, stock_price);
+		resultSet = queryDB(check);
+		int already_owned = 1;
+		try{
+		    if (!resultSet.next()){
+		    	already_owned = 0;
+		    }
+		}catch (Exception e){ return 1; }
+		
+		if(already_owned == 1){
+			String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%d "
+					+ "WHERE SA.c_username='%s' AND SA.stock_symbol='%s' AND SA.stock_price=%f;", shares, c_username, stock_symbol,stock_price);
+			
+			if (updateDB(s) != 0){
+				p("could not update the account");
+				return 1;
+			}
+		}
+		else{
+			String s = String.format("INSERT INTO StockAccount (c_username, shares, stock_price, stock_symbol) "
+					+ "VALUES ('%s', %d, %f, '%s');", c_username, shares, stock_price, stock_symbol);
+			
+			if (updateDB(s) != 0){
+				p("could not update the account");
+				return 1;
+			}
+		}
 
-        return addTransaction(stock_symbol, 0, stock_price, 0, shares, "1", c_username);
+		return addTransaction(stock_symbol, 0, stock_price, 0, shares, c_username);
 
-    }
-    if (shares < 0){
-        // sell stock
-        if (hasStockAccount(c_username, stock_symbol) == 1){
-            p("customer does not have a stock account");
-            return 1;
-        }
-        // check if owned shares of the inputed stock price will go below 0
-            int owned_shares = getShares(c_username, stock_symbol, stock_price);
-        if (owned_shares + shares < 0){
-            System.out.println("SA shares will go under 0");
-            return 1;
-        }
-        if (updateMA(c_username, amount, 1) != 0){
-            p("error depositing market account");
-            return 1;
-        }
-        
-        String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%f WHERE SA.c_username='%s' "
-                + "AND SA.stock_symbol='%s' AND SA.stock_price=%f;", shares, c_username, stock_symbol, stock_price);
-         if (updateDB(s) != 0){
-            p("could not update the account");
-            return 1;
-        }
-        if (owned_shares + shares == 0){
-            // delete the row
-            s = String.format("DELETE FROM StockAccount WHERE c_username='%s' AND stock_symbol='%s' AND stock_price=%f", c_username, stock_symbol, stock_price);
-        }
+	}
+	if (shares < 0){
+		// sell stock
+		if (hasStockAccount(c_username, stock_symbol) == 1){
+			p("customer does not have a stock account");
+			return 1;
+		}
+		// check if owned shares of the inputed stock price will go below 0
+	        int owned_shares = getShares(c_username, stock_symbol, stock_price);
+		if (owned_shares + shares < 0){
+			System.out.println("SA shares will go under 0");
+			return 1;
+		}
+		if (updateMA(c_username, amount, 1) != 0){
+			p("error depositing market account");
+			return 1;
+		}
+		
+		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%d WHERE SA.c_username='%s' "
+				+ "AND SA.stock_symbol='%s' AND SA.stock_price=%f;", shares, c_username, stock_symbol, stock_price);
+ 		if (updateDB(s) != 0){
+			p("could not update the account");
+			return 1;
+		}
+		if (owned_shares + shares == 0){
+		    // delete the row
+		    s = String.format("DELETE FROM StockAccount WHERE c_username='%s' AND stock_symbol='%s' AND stock_price=%f", c_username, stock_symbol, stock_price);
+		}
 
-        
-        return addTransaction(stock_symbol, 0, stock_price, 0, shares, "1", c_username);
-    }
+		
+		return addTransaction(stock_symbol, 0, stock_price, 0, shares, c_username);
+	}
 
-    p("tried to buy or sell zero shares");
-    return 1;
+	p("tried to buy or sell zero shares");
+	return 1;
     }   
     
     // -1 is the error value
@@ -550,40 +550,40 @@ public class DatabaseManager {
                     String columnValue = resultSet.getString(i);
                     movie_info += rsmd.getColumnName(i) + ": " + columnValue + "\n"; 
 //			        System.out.print(columnValue + " " + rsmd.getColumnName(i));
-                }
-            }
-        }catch(Exception e){
-            //do nothing rn
-        }
-        if(movie_info.length() == 0){
-            return "No movie with that title found";
-        }
-        return movie_info + "\n" + getReviews(movie);
-    }
+			    }
+			}
+		}catch(Exception e){
+			//do nothing rn
+		}
+		if(movie_info.length() == 0){
+			return "No movie with that title found";
+		}
+		return movie_info + "\n" + getReviews(movie);
+	}
 
-    public int addTransaction(String stock_symbol, double intrest_accrued, double stock_price, double market_account_amount, double stock_account_amount, String t_date, String username){
-        t_date = "1";
-        String s;
-        if (intrest_accrued != 0){
-            // intrest transaction
-            s = String.format("INSERT INTO Transactions (t_date, intrest_accrued, c_username) VALUES ('%s', %f, '%s';", t_date, intrest_accrued, username);
-            return updateDB(s);
-        } else if (market_account_amount != 0){
-            // market account transaction
-            s = String.format("INSERT INTO Transactions (t_date, market_account_amount, c_username) VALUES ('%s', %f, '%s');", t_date, market_account_amount, username);
-            return updateDB(s);
-        } else if (stock_account_amount != 0){
-            // stock account transaction
-            s = String.format("INSERT INTO Transactions (t_date, stock_symbol, stock_price, stock_account_amount, c_username) VALUES ('%s', '%s', %f, %f, '%s');", t_date, stock_symbol, stock_price, stock_account_amount, username);
-            return updateDB(s);
-        }else{
-            p("bad transaction type");
-            return 1;
-        }
-    }
+	public int addTransaction(String stock_symbol, double intrest_accrued, double stock_price, double market_account_amount, double stock_account_amount, String username){
+		String s;
+		String t_date = getCurrentDay();
+		if (intrest_accrued != 0){
+			// intrest transaction
+			s = String.format("INSERT INTO Transactions (t_date, intrest_accrued, c_username) VALUES ('%s', %f, '%s';", t_date, intrest_accrued, username);
+			return updateDB(s);
+		} else if (market_account_amount != 0){
+			// market account transaction
+			s = String.format("INSERT INTO Transactions (t_date, market_account_amount, c_username) VALUES ('%s', %f, '%s');", t_date, market_account_amount, username);
+			return updateDB(s);
+		} else if (stock_account_amount != 0){
+			// stock account transaction
+			s = String.format("INSERT INTO Transactions (t_date, stock_symbol, stock_price, stock_account_amount, c_username) VALUES ('%s', '%s', %f, %f, '%s');", t_date, stock_symbol, stock_price, stock_account_amount, username);
+			return updateDB(s);
+		}else{
+			p("bad transaction type");
+			return 1;
+		}
+	}
 
-    public String getTransactionHistory(String username){
-        ArrayList<String> list = new ArrayList<String>();
+	public String getTransactionHistory(String username){
+		ArrayList<String> list = new ArrayList<String>();
 //		if (!userExists(username)){ p("user doesn't exist"); return list.stream().toArray(String[]::new); }
         if (!userExists(username)){ p("user doesn't exist"); return "User does not exist"; }
         String query = String.format("SELECT * FROM Transactions T WHERE T.c_username='%s'", username);
@@ -623,43 +623,56 @@ public class DatabaseManager {
         }
 
 //		return list.stream().toArray(String[]::new);
-        String s = "";
-        for(int i = 0; i < list.size(); i++){
-            s += list.get(i) + "\n";
-        }
-        if(s.length() == 0){
-            return "No transactions found for this user";
-        }
-        return s;
-    }
-    
+		String s = "";
+		for(int i = 0; i < list.size(); i++){
+			s += list.get(i) + "\n";
+		}
+		if(s.length() == 0){
+			return "No transactions found for this user";
+		}
+		return s;
+	}
+	
+	public String getCurrentDay(){
+		String s = "SELECT * FROM CurrentDay";
+		resultSet = queryDB(s);
+		try{
+			if (resultSet.next()){
+				return resultSet.getString("day");
+			}
+		}catch (Exception e){
+			p("Error getting current day");
+		}
+		return "ERROR GETTING DAY";
+	}
+	
 
-    public int changeDay(String d){
-        String s = String.format("UPDATE CurrentDay SET day='%s'", d);
-        if(updateDB(s) != 0){
-            p("ERROR UPDATING DATE");
-            return -1;
-        }
-        return 0;
-    }
-    
+	public int changeDay(String d){
+		String s = String.format("UPDATE CurrentDay SET day='%s'", d);
+		if(updateDB(s) != 0){
+			p("ERROR UPDATING DATE");
+			return -1;
+		}
+		return 0;
+	}
+	
 
-    public String listActiveCustomers(){
-        ArrayList<String> list = new ArrayList<String>();
+	public String listActiveCustomers(){
+		ArrayList<String> list = new ArrayList<String>();
 
-        String query = "SELECT Temp.c_username "
-                      +"FROM ( SELECT COUNT(T.stock_account_amount) AS shares, T.c_username "
-                               +"FROM Transactions T "
-                               +"GROUP BY T.c_username ) AS Temp "
-                      +"WHERE Temp.shares >= 1000";
-        resultSet = queryDB(query);
-        try{
-            while (resultSet.next()){
-                list.add(resultSet.getString("c_username"));
-            }
-        }catch (Exception e){
-            p("resultSet access in list active customers");
-        }
+		String query = "SELECT Temp.c_username "
+					  +"FROM ( SELECT COUNT(T.stock_account_amount) AS shares, T.c_username "
+							   +"FROM Transactions T "
+							   +"GROUP BY T.c_username ) AS Temp "
+					  +"WHERE Temp.shares >= 1000";
+		resultSet = queryDB(query);
+		try{
+			while (resultSet.next()){
+				list.add(resultSet.getString("c_username"));
+			}
+		}catch (Exception e){
+			p("resultSet access in list active customers");
+		}
 
 //		return list.stream().toArray(String[]::new);
         String s = "";
@@ -848,7 +861,7 @@ public class DatabaseManager {
             }
 
             // post a intrest transaction
-            if (addTransaction("", intrest, 0, 0, 0, getCurrentDate(), usernames.get(i)) != 0){
+            if (addTransaction("", intrest, 0, 0, 0, usernames.get(i)) != 0){
                 p("couldn't post add intrest transaction from accrueIntrest");
             }
 

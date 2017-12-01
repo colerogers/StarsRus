@@ -73,7 +73,6 @@ public class SellStock extends JFrame {
 				int selected = (int)sharesField.getSelectedIndex();
 				String to_sell = shares_list[selected];
 				double stock_price = Double.parseDouble(to_sell.split("\\s+")[1]);
-				System.out.println(stock_price);
 				int shares = -1*Integer.parseInt(amountField.getText());
 				if(DB.updateSA(current_user, shares, stock_price, current_stock) == 0){
 					JOptionPane.showMessageDialog(null, "Stock sold");
