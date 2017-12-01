@@ -107,7 +107,7 @@ public class Trader extends JFrame {
 					}
 					break;
 				case 2://buy
-					double b_shares = Double.parseDouble(actionText.getText());
+					int b_shares = Integer.parseInt(actionText.getText());
 					String b_stock = stockField.getText();
 					double b_stock_price = DB.getCurrentStockPrice(b_stock); // TODO: get cur price
 					if (b_stock_price >= 0){
