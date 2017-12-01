@@ -246,7 +246,7 @@ public class DatabaseManager {
 	if (updateDB(s) != 0)
 		return 1;
 	// TODO: add to transactions
-	return addTransaction("", 0, 0, amount, 0, "1", username);
+	return addTransaction("", 0, 0, amount, 0, username);
     }
     
 	
@@ -304,7 +304,7 @@ public class DatabaseManager {
 			}
 		}
 
-		return addTransaction(stock_symbol, 0, stock_price, 0, shares, "1", c_username);
+		return addTransaction(stock_symbol, 0, stock_price, 0, shares, c_username);
 
 	}
 	if (shares < 0){
@@ -324,7 +324,7 @@ public class DatabaseManager {
 			return 1;
 		}
 		
-		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%f WHERE SA.c_username='%s' "
+		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%d WHERE SA.c_username='%s' "
 				+ "AND SA.stock_symbol='%s' AND SA.stock_price=%f;", shares, c_username, stock_symbol, stock_price);
  		if (updateDB(s) != 0){
 			p("could not update the account");
@@ -336,7 +336,7 @@ public class DatabaseManager {
 		}
 
 		
-		return addTransaction(stock_symbol, 0, stock_price, 0, shares, "1", c_username);
+		return addTransaction(stock_symbol, 0, stock_price, 0, shares, c_username);
 	}
 
 	p("tried to buy or sell zero shares");
@@ -532,9 +532,9 @@ public class DatabaseManager {
 		return movie_info;
 	}
 
-	public int addTransaction(String stock_symbol, double intrest_accrued, double stock_price, double market_account_amount, double stock_account_amount, String t_date, String username){
-		t_date = "1";
+	public int addTransaction(String stock_symbol, double intrest_accrued, double stock_price, double market_account_amount, double stock_account_amount, String username){
 		String s;
+		String t_date = getCurrentDay();
 		if (intrest_accrued != 0){
 			// intrest transaction
 			s = String.format("INSERT INTO Transactions (t_date, intrest_accrued, c_username) VALUES ('%s', %f, '%s';", t_date, intrest_accrued, username);
@@ -602,6 +602,19 @@ public class DatabaseManager {
 			return "No transactions found for this user";
 		}
 		return s;
+	}
+	
+	public String getCurrentDay(){
+		String s = "SELECT * FROM CurrentDay";
+		resultSet = queryDB(s);
+		try{
+			if (resultSet.next()){
+				return resultSet.getString("day");
+			}
+		}catch (Exception e){
+			p("Error getting current day");
+		}
+		return "ERROR GETTING DAY";
 	}
 	
 
