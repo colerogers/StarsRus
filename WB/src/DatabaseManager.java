@@ -798,22 +798,109 @@ public class DatabaseManager {
 
         if (yearToSet != curYear){
             // year change
-        }else if (monthToSet != curMonth){
-            // month change
+            // this loop will get us to correct year
+            for (int i=curYear; i<yearToSet; i++){
+                for (int j=curMonth; j<12; j++){
+                    for (int k=curDay; k<30; k++){
+                        if (endOfDay() != 0) { p("year change for loop in setDate");}
+                        if (deleteCurrentDate() != 0) { p("year change for loop in setDate"); }
+                        s = Integer.toString(i) + "-" + Integer.toString(j) + "-" + Integer.toString(k + 1);
+                        query = String.format("INSERT INTO CurrentDay values (%s)", s);
+                        if (updateDB(query) != 0) { p("year change for loop in setDate"); }
+                    }
+                    if (endOfDay() != 0) { p("year change for loop in setDate");}
+                    if (deleteCurrentDate() != 0) { p("year change for loop in setDate"); }
+                    s = Integer.toString(i) + "-" + Integer.toString(j+1) + "-" + Integer.toString(1);
+                    query = String.format("INSERT INTO CurrentDay values (%s)", s);
+                    if (updateDB(query) != 0) { p("year change for loop in setDate"); }
+                    if (accrueIntrest() != 0) { p("year change for loop in setDate"); }
+                    if (deleteTransactions() != 0) { p("year change for loop in setDate"); }
+                }
+                // i-12-1
+                // i-12-30
+                for (int k=1; k<30; k++){
+                    if (endOfDay() != 0) { p("year change for loop in setDate");}
+                    if (deleteCurrentDate() != 0) { p("year change for loop in setDate"); }
+                    s = Integer.toString(i) + "-" + Integer.toString(12) + "-" + Integer.toString(k + 1);
+                    query = String.format("INSERT INTO CurrentDay values (%s)", s);
+                    if (updateDB(query) != 0) { p("year change for loop in setDate"); }
+                }
+                if (endOfDay() != 0) { p("year change for loop in setDate");}
+                if (deleteCurrentDate() != 0) { p("year change for loop in setDate"); }
+                s = Integer.toString(i+1) + "-" + Integer.toString(01) + "-" + Integer.toString(01);
+                query = String.format("INSERT INTO CurrentDay values (%s)", s);
+                if (updateDB(query) != 0) { p("year change for loop in setDate"); }
+                if (accrueIntrest() != 0) { p("year change for loop in setDate"); }
+                if (deleteTransactions() != 0) { p("year change for loop in setDate"); }
+            }
+            // this loop will get us to first of the month
             for (int i=curMonth; i<monthToSet; i++){
                 // all months have 30 days?
                 for (int j=curDay; i<30; i++){
-
+                    if (endOfDay() != 0) { p("month change for loop in setDate");}
+                    if (deleteCurrentDate() != 0) { p("month change for loop in setDate"); }
+                    s = Integer.toString(curYear) + "-" + Integer.toString(i) + "-" + Integer.toString(j + 1);
+                    query = String.format("INSERT INTO CurrentDay values (%s)", s);
+                    if (updateDB(query) != 0) { p("month change for loop in setDate"); }
                 }
+                if (endOfDay() != 0) { p("month change for loop in setDate");}
+                if (deleteCurrentDate() != 0) { p("month change for loop in setDate"); }
+                s = Integer.toString(curYear) + "-" + Integer.toString(i+1) + "-" + Integer.toString(1);
+                query = String.format("INSERT INTO CurrentDay values (%s)", s);
+                if (updateDB(query) != 0) { p("month change for loop in setDate"); }
+                if (accrueIntrest() != 0) { p("month change for loop in setDate"); }
+                if (deleteTransactions() != 0) { p("month change for loop in setDate"); }
             }
+            // this loop will get us to correct day
+            for (int i=curDay; i<dayToSet; i++){
+                if (endOfDay() != 0) { p("month change for loop in setDate");}
+                if (deleteCurrentDate() != 0) { p("month change for loop in setDate"); }
+                s = Integer.toString(curYear) + "-" + Integer.toString(curMonth) + "-" + Integer.toString(i + 1);
+                query = String.format("INSERT INTO CurrentDay values (%s)", s);
+                if (updateDB(query) != 0) { p("month change for loop in setDate"); }
+            }
+
+        }else if (monthToSet != curMonth){
+            // month change
+
+            // this loop will get us to first of the month
+            for (int i=curMonth; i<monthToSet; i++){
+                // all months have 30 days?
+                for (int j=curDay; i<30; i++){
+                    if (endOfDay() != 0) { p("month change for loop in setDate");}
+                    if (deleteCurrentDate() != 0) { p("month change for loop in setDate"); }
+                    s = Integer.toString(curYear) + "-" + Integer.toString(i) + "-" + Integer.toString(j + 1);
+                    query = String.format("INSERT INTO CurrentDay values (%s)", s);
+                    if (updateDB(query) != 0) { p("month change for loop in setDate"); }
+                }
+                if (endOfDay() != 0) { p("month change for loop in setDate");}
+                if (deleteCurrentDate() != 0) { p("month change for loop in setDate"); }
+                s = Integer.toString(curYear) + "-" + Integer.toString(i+1) + "-" + Integer.toString(1);
+                query = String.format("INSERT INTO CurrentDay values (%s)", s);
+                if (updateDB(query) != 0) { p("month change for loop in setDate"); }
+                if (accrueIntrest() != 0) { p("month change for loop in setDate"); }
+                if (deleteTransactions() != 0) { p("month change for loop in setDate"); }
+            }
+            // this loop will get us to correct day
+            for (int i=curDay; i<dayToSet; i++){
+                if (endOfDay() != 0) { p("month change for loop in setDate");}
+                if (deleteCurrentDate() != 0) { p("month change for loop in setDate"); }
+                s = Integer.toString(curYear) + "-" + Integer.toString(curMonth) + "-" + Integer.toString(i + 1);
+                query = String.format("INSERT INTO CurrentDay values (%s)", s);
+                if (updateDB(query) != 0) { p("month change for loop in setDate"); }
+            }
+
         }else{
             // day change
+
             for (int i=curDay; i<dayToSet; i++){
                 if (endOfDay() != 0) { p("day change for loop in setDate");}
                 if (deleteCurrentDate() != 0) { p("day change for loop in setDate"); }
-                s = Integer.toString(curYear) + "-" + Integer.toString(curMonth) + "-" + Integer.toString(curDay + 1);
+                s = Integer.toString(curYear) + "-" + Integer.toString(curMonth) + "-" + Integer.toString(i + 1);
                 query = String.format("INSERT INTO CurrentDay values (%s)", s);
+                if (updateDB(query) != 0) { p("day change for loop in setDate"); }
             }
+
         }
 
         return 0;
@@ -930,8 +1017,8 @@ public class DatabaseManager {
         db = new DatabaseManager(args[1], args[2]);
     }
 
-    System.out.println("currentDate(): "+db.getCurrentDate());
-    System.out.println("endOfDay(): "+Integer.toString(db.endOfDay()));
+    //System.out.println("currentDate(): "+db.getCurrentDate());
+    //System.out.println("endOfDay(): "+Integer.toString(db.endOfDay()));
 
     //ResultSet rs = db.queryDB("SELECT * FROM Actors;");
 
