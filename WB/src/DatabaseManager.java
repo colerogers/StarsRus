@@ -558,7 +558,7 @@ public class DatabaseManager {
 		if(movie_info.length() == 0){
 			return "No movie with that title found";
 		}
-		return movie_info;
+		return movie_info + "\n" + getReviews(movie);
 	}
 
 	public int addTransaction(String stock_symbol, double intrest_accrued, double stock_price, double market_account_amount, double stock_account_amount, String username){
