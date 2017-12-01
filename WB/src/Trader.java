@@ -19,6 +19,7 @@ public class Trader extends JFrame {
 	private JTextField actionText;
 	private DatabaseManager DB = new DatabaseManager("ckoziol", "959");
 	private JTextField stockField;
+	private int market_open = 1;
 
 	/**
 	 * Launch the application.
@@ -53,7 +54,7 @@ public class Trader extends JFrame {
 				"Top Movies in x Years", "Reviews for x Movie"};
 		
 		String[] manager_options = {"Add Interest", "Generate Monthly Statement", "List Active Customers", "DTER",
-				"Customer Report", "Delete Transaction", "Change Date"};
+				"Customer Report", "Delete Transaction", "Change Date", "Close Market", "Open Market"};
 		
 
 		ArrayList<String> list = new ArrayList<String>();
@@ -85,6 +86,10 @@ public class Trader extends JFrame {
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int selected = (int)actionField.getSelectedIndex();
+				if(market_open == 0 && selected != 18){
+					JOptionPane.showMessageDialog(null, "The market is closed");
+					return;
+				}
 				switch(selected){
 				case 0://deposit
 					try{
@@ -214,6 +219,15 @@ public class Trader extends JFrame {
 					else{
 						JOptionPane.showMessageDialog(null, "Updated current date to: " + d);
 					}
+					break;
+				case 17:
+					market_open = 0;
+					DB.endOfDay();
+					JOptionPane.showMessageDialog(null, "Market Closed");
+					break;
+				case 18:
+					market_open = 1;
+					JOptionPane.showMessageDialog(null, "Market Open");
 					break;
 				}
 
