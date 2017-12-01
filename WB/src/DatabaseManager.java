@@ -606,13 +606,16 @@ public class DatabaseManager {
 		//			+ "FROM MarketAccounts MA "
 		//			+ "LEFT JOIN StockAccount SA ON SA.c_username = MA.c_username";
 		StringBuilder sb = new StringBuilder();
-		String query = "SELECT * FROM MarketAccounts";
+		String query = "SELECT * FROM MarketAccounts;";
 		resultSet = queryDB(query);
-		String username, stock_symbol;
-		double balance, shares, stock_price;
+		//String username, stock_symbol;
+		//double balance, shares, stock_price;
+		String username;
+		double balance;
 		try{
 			while (resultSet.next()){
 				username = resultSet.getString("c_username");
+				p(username);
 				//stock_symbol = resultSet.getString("stock_symbol");
 				//shares = resultSet.getDouble("shares");
 				balance = resultSet.getDouble("balance");
