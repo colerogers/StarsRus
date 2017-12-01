@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -36,7 +37,7 @@ public class SellStock extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public SellStock(String current_stock) {
+	public SellStock(String current_user, String current_stock) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -44,7 +45,12 @@ public class SellStock extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JComboBox sharesField = new JComboBox();
+		
+		
+		
+		String[] shares_list = DB.getShares(current_user, current_stock);
+		
+		JComboBox sharesField = new JComboBox(shares_list);
 		sharesField.setBounds(193, 88, 206, 50);
 		contentPane.add(sharesField);
 		
@@ -64,8 +70,18 @@ public class SellStock extends JFrame {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//sell stocks
-//				DB.get
-				dispose();
+				int selected = (int)sharesField.getSelectedIndex();
+				String to_sell = shares_list[selected];
+				double stock_price = Double.parseDouble(to_sell.split("\\s+")[1]);
+				System.out.println(stock_price);
+				double shares = Double.parseDouble(amountField.getText());
+				if(DB.updateSA(current_user, -shares, stock_price, current_stock) == 0){
+					JOptionPane.showMessageDialog(null, "Stock sold");
+					dispose();
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "Error selling stock");
+				}
 			}
 		});
 		btnNewButton.setBounds(321, 226, 117, 25);

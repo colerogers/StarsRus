@@ -324,8 +324,9 @@ public class DatabaseManager {
 			return 1;
 		}
 		
-		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%d WHERE SA.c_username='%s' AND SA.stock_symbol='%s' AND SA.stock_price=%f;", shares, c_username, stock_symbol, stock_price);
-		if (updateDB(s) != 0){
+		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%f WHERE SA.c_username='%s' "
+				+ "AND SA.stock_symbol='%s' AND SA.stock_price=%f;", shares, c_username, stock_symbol, stock_price);
+ 		if (updateDB(s) != 0){
 			p("could not update the account");
 			return 1;
 		}
