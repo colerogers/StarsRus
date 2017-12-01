@@ -123,7 +123,7 @@ public class Trader extends JFrame {
 					String stock = stockField.getText();
 					if(DB.stockExists(stock) == 0){
 						try {
-							SellStock frame = new SellStock(stock);
+							SellStock frame = new SellStock(current_user, stock);
 							frame.setVisible(true);
 						} catch (Exception ex) {
 							ex.printStackTrace();
