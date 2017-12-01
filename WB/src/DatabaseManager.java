@@ -844,13 +844,13 @@ public class DatabaseManager {
     public int endOfDay(){
         // for every customer add their balance to the Balance table
         ArrayList<String> usernames = new ArrayList<String>();
-        ArrayList<String> balances = new ArrayList<String>();
+        ArrayList<Double> balances = new ArrayList<Double>();
         String query = "SELECT * FROM MarketAccounts;";
         ResultSet rs = queryDB(query);
         try{
             while (rs.next()){
                 usernames.add(rs.getString("c_username"));
-                balances.add(rs.getString("balance"));
+                balances.add(rs.getDouble("balance"));
             }
         }catch (Exception e){ p("exception in endOfDay"); }
         for (int i=0; i<usernames.size(); i++){
@@ -858,7 +858,7 @@ public class DatabaseManager {
             if (updateDB(query) != 0)
                 p("inserting into balance");
         }
-        return 1;
+        return 0;
     }
 
     // intrest = average daily balance * .03
@@ -931,6 +931,7 @@ public class DatabaseManager {
     }
 
     System.out.println("currentDate(): "+db.getCurrentDate());
+    System.out.println("endOfDay(): "+Integer.toString(db.endOfDay()));
 
     //ResultSet rs = db.queryDB("SELECT * FROM Actors;");
 
