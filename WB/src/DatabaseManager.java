@@ -245,8 +245,37 @@ public class DatabaseManager {
 	s = String.format("UPDATE MarketAccounts MA SET MA.balance=MA.balance+%.2f WHERE MA.c_username='%s';", amount, username);
 	if (updateDB(s) != 0)
 		return 1;
-	// TODO: add to transactions
+	
 	return addTransaction("", 0, 0, amount, 0, username);
+    }
+
+    // Use if we dont want to add to the transaction log
+    public int updateMA(String username, double amount, int i) {
+	// check if user exists
+	if (!userExists(username)){
+	    System.out.println("username does not exist");
+	    return 1;
+	}
+	String s = String.format("SELECT MA.c_username FROM MarketAccounts MA WHERE MA.c_username='%s';", username);
+	resultSet = queryDB(s);
+	try{
+	    if (!resultSet.next()){
+		// create market account for user and add $1000
+		System.out.println("Market Account does not exist");
+		return 1;
+	    }
+	}catch (Exception e){ return 1; }
+	// get current balance and check if the amount will take the account below zero
+	if (getBalance(username) + amount < 0){
+		System.out.println("MA Balance will go under 0");
+		return 1;
+	}
+
+	s = String.format("UPDATE MarketAccounts MA SET MA.balance=MA.balance+%.2f WHERE MA.c_username='%s';", amount, username);
+	if (updateDB(s) != 0)
+		return 1;
+
+	return 0;
     }
     
 	
@@ -270,7 +299,7 @@ public class DatabaseManager {
 				return 1;
 			}
 		}
-		if (updateMA(c_username, amount) != 0){
+		if (updateMA(c_username, amount, 1) != 0){
 			p("error withdrawing market account in updateSA");
 			return 1;
 		}
@@ -319,7 +348,7 @@ public class DatabaseManager {
 			System.out.println("SA shares will go under 0");
 			return 1;
 		}
-		if (updateMA(c_username, amount) != 0){
+		if (updateMA(c_username, amount, 1) != 0){
 			p("error depositing market account");
 			return 1;
 		}
