@@ -798,6 +798,8 @@ public class DatabaseManager {
 
         if (yearToSet != curYear){
             // year change
+            System.out.println("changing year");
+            
             // this loop will get us to correct year
             for (int i=curYear; i<yearToSet; i++){
                 for (int j=curMonth; j<12; j++){
@@ -862,6 +864,7 @@ public class DatabaseManager {
 
         }else if (monthToSet != curMonth){
             // month change
+            System.out.println("changing month");
 
             // this loop will get us to first of the month
             for (int i=curMonth; i<monthToSet; i++){
@@ -892,6 +895,7 @@ public class DatabaseManager {
 
         }else{
             // day change
+            System.out.println("changing day");
 
             for (int i=curDay; i<dayToSet; i++){
                 if (endOfDay() != 0) { p("day change for loop in setDate");}
