@@ -107,17 +107,25 @@ public class Trader extends JFrame {
 					}
 					break;
 				case 2://buy
-					int b_shares = Integer.parseInt(actionText.getText());
-					String b_stock = stockField.getText();
-					double b_stock_price = DB.getCurrentStockPrice(b_stock); // TODO: get cur price
-					if (b_stock_price >= 0){
-						if (DB.updateSA(current_user, b_shares, b_stock_price, b_stock) == 0){
-							JOptionPane.showMessageDialog(null, "Successfully bought shares");
-						}else{
-							JOptionPane.showMessageDialog(null, "Error occured");
+					try{
+						int b_shares = Integer.parseInt("0" + actionText.getText());
+						String b_stock = stockField.getText();
+						double b_stock_price = DB.getCurrentStockPrice(b_stock); // TODO: get cur price
+						if(b_shares <= 0 || DB.stockExists(b_stock) != 0){
+							JOptionPane.showMessageDialog(null, "Enter valid number of shares or valid stock symbol");
 						}
-					}else 
-						JOptionPane.showMessageDialog(null, "Error getting stock price");
+						else if (b_stock_price >= 0){
+							if (DB.updateSA(current_user, b_shares, b_stock_price, b_stock) == 0){
+								JOptionPane.showMessageDialog(null, "Successfully bought shares");
+							}else{
+								JOptionPane.showMessageDialog(null, "Error occured");
+							}
+						}else {
+							JOptionPane.showMessageDialog(null, "Error getting stock price");
+						}
+					} catch (Exception ex){
+						JOptionPane.showMessageDialog(null, "Input Error");
+					}
 					break;
 				case 3://sell
 					String stock = stockField.getText();
@@ -178,11 +186,14 @@ public class Trader extends JFrame {
 				case 10://Add interest
 					break;
 				case 11://generate monthly statement
+					String user = actionText.getText();
+					JOptionPane.showMessageDialog(null, DB.generateMonthlyStatement(user));
 					break;
 				case 12://list active customers
 					JOptionPane.showMessageDialog(null, DB.listActiveCustomers());
 					break;
 				case 13://DTER
+					JOptionPane.showMessageDialog(null, DB.generateGovernementReport());
 					break;
 				case 14://customer report
 					JOptionPane.showMessageDialog(null, DB.customerReport());

@@ -64,7 +64,7 @@ public class DatabaseManager {
     }catch (Exception e){
         System.out.println("executeQuery() failed");
         System.out.println(query);
-        System.exit(1);
+//        System.exit(1);
     }
     return resultSet;
     }
@@ -700,10 +700,70 @@ public class DatabaseManager {
         return i;
     }
     
-    public String[] generateGovernementReport(){
-        ArrayList<String> list = new ArrayList<String>();
+    public String generateGovernementReport(){
+    	String query1 = "SELECT T.c_username, SUM(T.interest_accrued) as sum FROM Transactions T WHERE T.interest_accrued IS NOT NULL GROUP BY T.c_username";
+    	String query2 = "SELECT T.c_username, SUM(T.stock_price * -1 * T.stock_account_amount - 20) as sum FROM Transactions T WHERE T.stock_account_amount < 0 GROUP BY c_username";
         
-        return list.stream().toArray(String[]::new);
+        try{
+            resultSet = queryDB(query1);
+        }catch (Exception e){
+            p("executeQuery() failed");
+            p(query1);
+        }
+
+        HashMap<String, Double> total = new HashMap<String, Double>();
+        try{
+        	while(resultSet.next()){
+        		total.put(resultSet.getString("c_username"), resultSet.getDouble("sum"));
+        	}
+        } catch(Exception e){
+        	p(e.toString());
+        	p("Error in gov report");
+        }
+        
+        try{
+            resultSet = queryDB(query2);
+        }catch (Exception e){
+            p("executeQuery() failed");
+            p(query2);
+        }
+        
+        try{
+        	while(resultSet.next()){
+        		if(total.get(resultSet.getString("c_username")) == null){
+            		total.put(resultSet.getString("c_username"), resultSet.getDouble("sum"));
+        		}
+        		else{
+        			double value = total.get(resultSet.getString("c_username"));
+        			value += resultSet.getDouble("sum");
+        			total.put(resultSet.getString("c_username"), value);
+        		}
+        	}
+        } catch(Exception e){
+        	p("Error in gov report");
+        }
+        
+        String people = "";
+        for (String key : total.keySet()){
+        	if(total.get(key) >= 10000){
+        		String query3 = String.format("SELECT U.name, U.state FROM Users U WHERE U.c_username='%s'", key);
+        		resultSet = queryDB(query3);
+        		try{
+        			if(resultSet.next()){
+        				String state = resultSet.getString("state");
+        				String name = resultSet.getString("name");
+        				people += String.format("Name: %s, State: %s\n", name, state);
+        			}
+        		} catch (Exception ex){
+        			p(ex.toString());
+        		}
+        	}
+        }
+//        System.out.println(people);
+        if (people==""){
+        	return "No users earned more than $10,000 this month";
+        }
+        return "Users who have earned more than $10,000 this month:\n" + people;
     }
 
     // "" is the error condition
@@ -723,6 +783,87 @@ public class DatabaseManager {
             }
         }catch (Exception e){ p("exception in getCustomerName"); }
         return name;
+    }
+    
+    
+    public String generateMonthlyStatement(String username){
+    	if(!userExists(username)){
+    		return "Error user does no exist";
+    	}
+    	String query1 = String.format("SELECT U.name, U.email FROM Users U WHERE U.c_username = '%s'", username);
+    	String statement = "";
+    	//get name and email
+    	try{
+    		resultSet = queryDB(query1);
+    		if(resultSet.next()){
+    			String name = resultSet.getString("name");
+    			String email = resultSet.getString("email");
+    			statement += String.format("Name: %s, Email: %s\n", name, email);
+    		}
+    	}  catch (Exception ex){
+    		p(ex.toString());
+    	}
+    	
+    	//get starting and closing balance
+    	
+    	//first day of the month so no balances yet
+    	double start_month = -1;
+    	double end_month = -1;    	
+    	if (getCurrentDate().split("-")[2].equals("01")){
+    		start_month = getBalance(username);
+    		end_month = start_month;
+    	} 
+    	else{
+    	
+	    	String max = String.format("(SELECT MAX(B.balance_date) FROM Balance B WHERE B.c_username='%s')", username);
+	    	String min = String.format("(SELECT MIN(B.balance_date) FROM Balance B WHERE B.c_username='%s')", username);
+	    	String query_begging = String.format("SELECT B.balance FROM Balance B WHERE B.c_username='%s' AND B.balance_date=%s", username, min);
+	    	String query_end = String.format("SELECT B.balance FROM Balance B WHERE B.c_username='%s' AND B.balance_date=%s", username, max);
+	    	
+
+	    	try{
+	    		resultSet = queryDB(query_begging);
+	    		if(resultSet.next()){
+	    			start_month = resultSet.getDouble("balance");
+	    		}
+	    	}  catch (Exception ex){
+	    		p(ex.toString());
+	    	}    	
+	    	try{
+	    		resultSet = queryDB(query_end);
+	    		if(resultSet.next()){
+	    			end_month = resultSet.getDouble("balance");
+	    		}
+	    	}  catch (Exception ex){
+	    		p(ex.toString());
+	    	}
+    	}
+    	
+    	statement += String.format("Starting Balance: $%.2f\nEndingBalance: $%.2f\n", start_month, end_month);
+    	
+    	double earnings = end_month - start_month;
+    	if(earnings >= 0){
+    		statement += String.format("Earnings: $%.2f\n", earnings);
+    	}
+    	else{
+    		statement += String.format("Loss: $%.2f\n", earnings);
+    	}
+ 
+    	
+    	//total commision paid
+    	String commision_query = String.format("SELECT COUNT(*) as count FROM Transactions T WHERE T.c_username = '%s' AND T.stock_symbol IS NOT NULL", username);
+    	try{
+    		resultSet = queryDB(commision_query);
+    		if(resultSet.next()){
+    			int total_commision = 20*resultSet.getInt("count");
+    			statement += String.format("Total commision paid: $%d", total_commision);
+    		}
+    	}  catch (Exception ex){
+    		p(ex.toString());
+    	}
+    		
+    	
+    	return statement;
     }
 
     // "" is the error condidtion
