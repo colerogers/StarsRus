@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -72,9 +73,15 @@ public class SellStock extends JFrame {
 				int selected = (int)sharesField.getSelectedIndex();
 				String to_sell = shares_list[selected];
 				double stock_price = Double.parseDouble(to_sell.split("\\s+")[1]);
+				System.out.println(stock_price);
 				double shares = Double.parseDouble(amountField.getText());
-				DB.updateSA(current_user, -shares, stock_price, current_stock);
-				dispose();
+				if(DB.updateSA(current_user, -shares, stock_price, current_stock) == 0){
+					JOptionPane.showMessageDialog(null, "Stock sold");
+					dispose();
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "Error selling stock");
+				}
 			}
 		});
 		btnNewButton.setBounds(321, 226, 117, 25);
