@@ -607,7 +607,7 @@ public class DatabaseManager {
 		//			+ "LEFT JOIN StockAccount SA ON SA.c_username = MA.c_username";
 		StringBuilder sb = new StringBuilder();
 		String query = "SELECT * FROM MarketAccounts;";
-		resultSet = queryDB(query);
+		ResultSet resultSet = queryDB(query);
 		//String username, stock_symbol;
 		//double balance, shares, stock_price;
 		String username;
