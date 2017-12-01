@@ -140,7 +140,7 @@ public class DatabaseManager {
 	return updateDB(s);
 	}
 	
-	public int addStockAccount(String c_username, double shares, double stock_price, String stock_symbol){
+	public int addStockAccount(String c_username, int shares, double stock_price, String stock_symbol){
 		if (shares < 0){ p("shares below 0"); return 1; }
 		if (stock_symbol.length() != 3){ p("stock_symbol not length 3"); return 1; }
 		if (!userExists(c_username)){ p("user doesn't exist"); return 1; }
@@ -150,7 +150,7 @@ public class DatabaseManager {
 			return 1;
 		}
 
-		String s = String.format("INSERT INTO StockAccount (c_username, shares, stock_price, stock_symbol) VALUES ('%s', %f, %f, '%s');", c_username, shares, stock_price, stock_symbol);
+		String s = String.format("INSERT INTO StockAccount (c_username, shares, stock_price, stock_symbol) VALUES ('%s', %d, %f, '%s');", c_username, shares, stock_price, stock_symbol);
 		// add the SA to the DB
 		return updateDB(s);
 	}
@@ -250,7 +250,7 @@ public class DatabaseManager {
     }
 	
 	// buy and sell shares of stocks
-    public int updateSA(String c_username, double shares, double stock_price, String stock_symbol){
+    public int updateSA(String c_username, int shares, double stock_price, String stock_symbol){
 	if (!userExists(c_username)){
 	    System.out.println("username does not exist");
 	    return 1;
@@ -285,7 +285,7 @@ public class DatabaseManager {
 		}catch (Exception e){ return 1; }
 		
 		if(already_owned == 1){
-			String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%f "
+			String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%d "
 					+ "WHERE SA.c_username='%s' AND SA.stock_symbol='%s' AND SA.stock_price=%f;", shares, c_username, stock_symbol,stock_price);
 			
 			if (updateDB(s) != 0){
@@ -295,7 +295,7 @@ public class DatabaseManager {
 		}
 		else{
 			String s = String.format("INSERT INTO StockAccount (c_username, shares, stock_price, stock_symbol) "
-					+ "VALUES ('%s', %.2f, %.2f, '%s');", c_username, shares, stock_price, stock_symbol);
+					+ "VALUES ('%s', %d, %f, '%s');", c_username, shares, stock_price, stock_symbol);
 			
 			if (updateDB(s) != 0){
 				p("could not update the account");
@@ -313,7 +313,8 @@ public class DatabaseManager {
 			return 1;
 		}
 		// check if owned shares of the inputed stock price will go below 0
-		if (getShares(c_username, stock_symbol, stock_price) + shares < 0){
+	        int owned_shares = getShares(c_username, stock_symbol, stock_price);
+		if (owned_shares + shares < 0){
 			System.out.println("SA shares will go under 0");
 			return 1;
 		}
@@ -322,11 +323,17 @@ public class DatabaseManager {
 			return 1;
 		}
 		
-		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%f WHERE SA.c_username='%s' AND SA.stock_symbol='%s';", shares, c_username, stock_symbol);
+		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%d WHERE SA.c_username='%s' AND SA.stock_symbol='%s' AND SA.stock_price=%f;", shares, c_username, stock_symbol, stock_price);
 		if (updateDB(s) != 0){
 			p("could not update the account");
 			return 1;
 		}
+		if (owned_shares + shares == 0){
+		    // delete the row
+		    s = String.format("DELETE FROM StockAccount WHERE c_username='%s' AND stock_symbol='%s' AND stock_price=%f", c_username, stock_symbol, stock_price);
+		}
+
+		
 		return addTransaction(stock_symbol, 0, stock_price, 0, shares, "1", c_username);
 	}
 
@@ -357,14 +364,14 @@ public class DatabaseManager {
 	resultSet = queryDB(s);
 	try{
 	    while(resultSet.next())
-		prices.add(resultSet.getString("shares") +" "+resultSet.getString("stock_price"));
+		prices.add(resultSet.getInt("shares") +" "+resultSet.getString("stock_price"));
 	}catch (Exception e){
 	    p("exception in getShares(username, stock_symbol)");
 	}
 	return prices.stream().toArray(String[]::new);
     }
 	// -1 is the error value;
-    public double getShares(String username, String stock_symbol, double stock_price){
+    public int getShares(String username, String stock_symbol, double stock_price){
 		if (!userExists(username)){ p("user not found"); return -1; }
 
 		String s = String.format("SELECT SA.shares FROM StockAccount SA WHERE SA.c_username='%s' AND SA.stock_symbol='%s' AND SA.stock_price=%f", username, stock_symbol, stock_price);
@@ -372,7 +379,7 @@ public class DatabaseManager {
 		try{
 			if (!resultSet.next())
 				return 0;
-			return resultSet.getDouble("shares");
+			return resultSet.getInt("shares");
 		}catch (Exception e){
 			return 0;
 		}
@@ -686,7 +693,7 @@ public class DatabaseManager {
 		StringBuilder sb = new StringBuilder("");
 		try{
 			while (rs.next()){
-				sb.append(rs.getString("stock_symbol")+":"+rs.getDouble("shares"));
+				sb.append(rs.getString("stock_symbol")+":"+rs.getInt("shares"));
 				if (rs.next())
 					sb.append(", ");
 			}
