@@ -23,5 +23,6 @@ javac Login.java
 javac Manager.java
 javac Register.java
 javac Trader.java 
+javac SellStock.java
 
 java -cp /cs/class/cs174a/public/mysql-connector-java-5.1.44-bin.jar:. Login

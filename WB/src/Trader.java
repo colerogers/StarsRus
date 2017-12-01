@@ -53,7 +53,7 @@ public class Trader extends JFrame {
 				"Top Movies in x Years", "Reviews for x Movie"};
 		
 		String[] manager_options = {"Add Interest", "Generate Monthly Statement", "List Active Customers", "DTER",
-				"Customer Report", "Delete Transaction"};
+				"Customer Report", "Delete Transaction", "Change Date"};
 		
 
 		ArrayList<String> list = new ArrayList<String>();
@@ -120,18 +120,30 @@ public class Trader extends JFrame {
 						JOptionPane.showMessageDialog(null, "Error getting stock price");
 					break;
 				case 3://sell
-					int s_shares = Integer.parseInt(actionText.getText()) * (-1);
-					String s_stock = stockField.getText();
-					double s_stock_price = DB.getCurrentStockPrice(s_stock); //HERE fix stock price
-					if (s_stock_price >= 0){
-						if(DB.updateSA(current_user, s_shares, s_stock_price, s_stock) == 0){
-							JOptionPane.showMessageDialog(null, "Successfully sold shares");
+					String stock = stockField.getText();
+					if(DB.stockExists(stock) == 0){
+						try {
+							SellStock frame = new SellStock(stock);
+							frame.setVisible(true);
+						} catch (Exception ex) {
+							ex.printStackTrace();
 						}
-						else{
-							JOptionPane.showMessageDialog(null, "Error occured");
-						}
-					}else 
-						JOptionPane.showMessageDialog(null, "Error getting stock price");
+					}
+					else{
+						JOptionPane.showMessageDialog(null, "Stock does not exist");
+					}
+//					int s_shares = Integer.parseInt(actionText.getText()) * (-1);
+//					String s_stock = stockField.getText();
+//					double s_stock_price = DB.getCurrentStockPrice(s_stock); //HERE fix stock price
+//					if (s_stock_price >= 0){
+//						if(DB.updateSA(current_user, s_shares, s_stock_price, s_stock) == 0){
+//							JOptionPane.showMessageDialog(null, "Successfully sold shares");
+//						}
+//						else{
+//							JOptionPane.showMessageDialog(null, "Error occured");
+//						}
+//					}else 
+//						JOptionPane.showMessageDialog(null, "Error getting stock price");
 					break;
 				case 4://show balance
 					double balance = DB.getBalance(current_user);
@@ -141,6 +153,8 @@ public class Trader extends JFrame {
 					JOptionPane.showMessageDialog(null, DB.getTransactionHistory(current_user));
 					break;
 				case 6://check stock/actor
+					String stock_symbol = stockField.getText();
+					JOptionPane.showMessageDialog(null, DB.getActorAndStock(stock_symbol));
 					break;
 				case 7://list movie info
 					String movie = actionText.getText();
@@ -177,10 +191,21 @@ public class Trader extends JFrame {
 					if(1 == DB.deleteTransactions()){
 						JOptionPane.showMessageDialog(null, "Error deleting Transactions");
 					}
-					JOptionPane.showMessageDialog(null, "Transactions for this month deleted");
+					else{
+						JOptionPane.showMessageDialog(null, "Transactions for this month deleted");
+					}
+					break;
+				case 16://change date
+					String d = actionText.getText();
+					if (DB.changeDay(d) != 0){
+						JOptionPane.showMessageDialog(null, "Date change failed");
+					}
+					else{
+						JOptionPane.showMessageDialog(null, "Updated current date to: " + d);
+					}
 					break;
 				}
-				
+
 				
 				actionText.setText("");
 				stockField.setText("");

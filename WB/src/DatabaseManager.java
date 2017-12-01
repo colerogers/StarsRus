@@ -1,6 +1,7 @@
 import java.lang.*;
 import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 public class DatabaseManager {
     final String HOST = "jdbc:mysql://cs174a.engr.ucsb.edu:3306/ckoziolDB";
@@ -272,12 +273,38 @@ public class DatabaseManager {
 			p("error withdrawing market account in updateSA");
 			return 1;
 		}
-		String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%f WHERE SA.c_username='%s' AND SA.stock_symbol='%s';", shares, c_username, stock_symbol);
-		if (updateDB(s) != 0){
-			p("could not update the account");
-			return 1;
+
+		//check to see if user already has stock for that price
+		String check = String.format("SELECT SA.* FROM StockAccount SA WHERE c_username='%s' AND stock_price=%.2f", c_username, stock_price);
+		resultSet = queryDB(check);
+		int already_owned = 1;
+		try{
+		    if (!resultSet.next()){
+		    	already_owned = 0;
+		    }
+		}catch (Exception e){ return 1; }
+		
+		if(already_owned == 1){
+			String s = String.format("UPDATE StockAccount SA SET SA.shares=SA.shares+%f "
+					+ "WHERE SA.c_username='%s' AND SA.stock_symbol='%s' AND SA.stock_price=%f;", shares, c_username, stock_symbol,stock_price);
+			
+			if (updateDB(s) != 0){
+				p("could not update the account");
+				return 1;
+			}
 		}
+		else{
+			String s = String.format("INSERT INTO StockAccount (c_username, shares, stock_price, stock_symbol) "
+					+ "VALUES ('%s', %.2f, %.2f, '%s');", c_username, shares, stock_price, stock_symbol);
+			
+			if (updateDB(s) != 0){
+				p("could not update the account");
+				return 1;
+			}
+		}
+
 		return addTransaction(stock_symbol, 0, stock_price, 0, shares, "1", c_username);
+
 	}
 	if (shares < 0){
 		// sell stock
@@ -366,6 +393,29 @@ public class DatabaseManager {
 		}catch (Exception e){ p("exception in getCurrentStockPrice"); }
 		return -1;
 	}
+	
+	public String getActorAndStock(String stock_symbol){
+		double current_price = getCurrentStockPrice(stock_symbol);
+		if(current_price == -1){
+			return "Stock symbol/Actor not found";
+		}
+		
+		String s = String.format("SELECT A.* FROM Actors A WHERE A.stock_symbol='%s'", stock_symbol);
+		resultSet = queryDB(s);
+		String actor_info = "";
+		try{
+			if (resultSet.next()){
+				actor_info += "Name: " + resultSet.getString("name");
+				actor_info += "\n Stock Symbol: " + resultSet.getString("stock_symbol");
+				actor_info += "\n Stock price: " + current_price;
+				actor_info += "\n Birthday: " + resultSet.getString("birthday");
+			}
+		}catch (Exception e){ p("exception in getting Actor"); }
+		
+		return actor_info;
+	}
+	
+	
 
 	public int getMovieId(String movie){
 		String s = String.format("SELECT M.* FROM moviesDB.Movies M WHERE M.title = '%s'", movie);
@@ -544,6 +594,17 @@ public class DatabaseManager {
 		}
 		return s;
 	}
+	
+
+	public int changeDay(String d){
+		String s = String.format("UPDATE CurrentDay SET day='%s'", d);
+		if(updateDB(s) != 0){
+			p("ERROR UPDATING DATE");
+			return -1;
+		}
+		return 0;
+	}
+	
 
 	public String listActiveCustomers(){
 		ArrayList<String> list = new ArrayList<String>();
