@@ -780,6 +780,56 @@ public class DatabaseManager {
         return sb.toString();
     }
 
+    // dateToSet = "YYYY-MM-DD"
+    public int setDate(String dateToSet){
+        String[] parts = dateToSet.split("-");
+        int yearToSet = Integer.parseInt(parts[0]);
+        int monthToSet = Integer.parseInt(parts[1]);
+        int dayToSet = Integer.parseInt(parts[2]);
+        parts = getCurrentDate().split("-");
+        int curYear = Integer.parseInt(parts[0]);
+        int curMonth = Integer.parseInt(parts[1]);
+        int curDay = Integer.parseInt(parts[2]);
+        if (yearToSet < curYear) { p("can't set a previous year"); return 1; }
+        if (monthToSet < curMonth) { p("can't set a previous month"); return 1; }
+        if (dayToSet < curDay) { p("can't set a previous day"); return 1; }
+
+        String query, s;
+
+        if (yearToSet != curYear){
+            // year change
+        }else if (monthToSet != curMonth){
+            // month change
+            for (int i=curMonth; i<monthToSet; i++){
+                // all months have 30 days?
+                for (int j=curDay; i<30; i++){
+
+                }
+            }
+        }else{
+            // day change
+            for (int i=curDay; i<dayToSet; i++){
+                if (endOfDay() != 0) { p("day change for loop in setDate");}
+                if (deleteCurrentDate() != 0) { p("day change for loop in setDate"); }
+                s = Integer.toString(curYear) + "-" + Integer.toString(curMonth) + "-" + Integer.toString(curDay + 1);
+                query = String.format("INSERT INTO CurrentDay values (%s)", s);
+            }
+        }
+
+        return 0;
+    }
+
+    // use when updating date
+    public int deleteCurrentDate(){
+        String query = "DELETE FROM CurrentDay";
+        if (updateDB(query) != 0){
+            p("couldn't delete current date");
+            return 1;
+        }
+        return 0;
+    }
+
+    // YYYY-MM-DD format
     public String getCurrentDate(){
         String query = "SELECT C.day FROM CurrentDay C";
         ResultSet rs = queryDB(query);
@@ -879,6 +929,8 @@ public class DatabaseManager {
     }else {
         db = new DatabaseManager(args[1], args[2]);
     }
+
+    System.out.println("currentDate(): "+db.getCurrentDate());
 
     //ResultSet rs = db.queryDB("SELECT * FROM Actors;");
 
