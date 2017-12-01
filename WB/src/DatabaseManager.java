@@ -172,6 +172,19 @@ public class DatabaseManager {
 		return 1;
 	}
 
+	public int hasStockAccount(String username){
+		if (!userExists(username)){ p("user doesn't exist"); return 1; }
+		// check account already exists
+		String s = String.format("SELECT SA.c_username FROM StockAccount SA WHERE SA.c_username='%s';", username);
+		resultSet = queryDB(s);
+		try{
+			if (resultSet.next()){
+				return 0;
+			}
+		}catch (Exception e){ p("exception in hasStockAccount"); return 1;}
+		return 1;
+	}
+
 	// return 0 if true, 1 if false
 	public int stockExists(String stock_symbol){
 		String s = String.format("SELECT S.stock_symbol FROM Stocks S WHERE S.stock_symbol='%s'", stock_symbol);
@@ -607,23 +620,24 @@ public class DatabaseManager {
 		//			+ "LEFT JOIN StockAccount SA ON SA.c_username = MA.c_username";
 		StringBuilder sb = new StringBuilder();
 		String query = "SELECT * FROM MarketAccounts;";
-		ResultSet resultSet = queryDB(query);
+		ResultSet rs = queryDB(query);
 		//String username, stock_symbol;
 		//double balance, shares, stock_price;
 		String username;
 		double balance;
 		try{
-			while (resultSet.next()){
-				username = resultSet.getString("c_username");
+			while (rs.next()){
+				username = rs.getString("c_username");
 				p(username);
 				//stock_symbol = resultSet.getString("stock_symbol");
 				//shares = resultSet.getDouble("shares");
-				balance = resultSet.getDouble("balance");
+				balance = rs.getDouble("balance");
 				//stock_price = resultSet.getDouble("stock_price");
 				
 				sb.append(getCustomerName(username) + ":");
 				sb.append("\n\tMarket Account Balance: " + balance);
-				sb.append("\n\tStock Account(s): " + getCustomerStockAccountsShares(username));
+				if (hasStockAccount(username) == 0)
+					sb.append("\n\tStock Account(s): " + getCustomerStockAccountsShares(username));
 				if (resultSet.next())
 					sb.append("\n");
 				
