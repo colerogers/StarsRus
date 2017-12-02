@@ -285,7 +285,7 @@ public class DatabaseManager {
 	    System.out.println("username does not exist");
 	    return 1;
 	}
-	double amount = shares * getCurrentStockPrice(stock_symbol) + 20;
+	double amount = Math.abs(shares * getCurrentStockPrice(stock_symbol)) + 20;
 	if (shares > 0){
 		// buy stock
 		if (getBalance(c_username) + amount < 0){
@@ -299,7 +299,7 @@ public class DatabaseManager {
 				return 1;
 			}
 		}
-		if (updateMA(c_username, amount, 1) != 0){
+		if (updateMA(c_username, -1*amount, 1) != 0){
 			p("error withdrawing market account in updateSA");
 			return 1;
 		}
@@ -662,7 +662,7 @@ public class DatabaseManager {
 		ArrayList<String> list = new ArrayList<String>();
 
 		String query = "SELECT Temp.c_username "
-					  +"FROM ( SELECT COUNT(T.stock_account_amount) AS shares, T.c_username "
+					  +"FROM ( SELECT SUM(ABS(T.stock_account_amount)) AS shares, T.c_username "
 							   +"FROM Transactions T "
 							   +"GROUP BY T.c_username ) AS Temp "
 					  +"WHERE Temp.shares >= 1000";
@@ -1149,7 +1149,7 @@ public class DatabaseManager {
     public int accrueIntrest(){
         HashMap<Double, Integer> frequency = new HashMap<Double, Integer>();
         ArrayList<String> usernames = new ArrayList<String>();
-        String query = "SELECT DISTINCT B.c_username FROM Balance B;";
+        String query = "SELECT DISTINCT B.c_username FROM MarketAccounts B;";
         ResultSet rs = queryDB(query);
         try{
             while (rs.next()){

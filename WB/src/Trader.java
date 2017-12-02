@@ -189,6 +189,7 @@ public class Trader extends JFrame {
 					JOptionPane.showMessageDialog(null, DB.getReviews(r_movie));
 					break;
 				case 10://Add interest
+					JOptionPane.showMessageDialog(null, DB.accrueIntrest());
 					break;
 				case 11://generate monthly statement
 					String user = actionText.getText();
@@ -213,7 +214,7 @@ public class Trader extends JFrame {
 					break;
 				case 16://change date
 					String d = actionText.getText();
-					if (DB.changeDay(d) != 0){
+					if (DB.setDate(d) != 0){
 						JOptionPane.showMessageDialog(null, "Date change failed");
 					}
 					else{
