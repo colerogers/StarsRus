@@ -11,7 +11,6 @@ INDEX VERSION 1.130+/fs/student/ckoziol/cs174a/StarsRus/.metadata/.plugins/org.e
 717094620.index
 483952519.index
 1684099218.index
-4034258842.index
 369053523.index
 3487786582.index
 3733393255.index

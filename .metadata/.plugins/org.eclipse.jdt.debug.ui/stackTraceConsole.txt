@@ -1,0 +1,10 @@
+    	try{
+    		resultSet = queryDB(query1);
+    		if(resultSet.next()){
+    			String name = resultSet.getString("name");
+    			String email = resultSet.getString("email");
+    			statement += String.format("Name: %s, Email: %s\n", name, email);
+    		}
+    	}  catch (Exception ex){
+    		p(ex.toString());
+    	}
